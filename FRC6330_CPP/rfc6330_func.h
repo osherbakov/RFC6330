@@ -47,10 +47,16 @@ void rfc6330_tuple( rfc6330_tuple_t *tuple, rfc6330_params_t *param, unsigned in
 
 void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *ISIs, unsigned int NumSymbols);
 
+int rfc6330_gf_gauss(unsigned char *Result, 
+					  unsigned char *A, 
+					  unsigned char *Symbols, unsigned int Size);
+
 //  Operations on the GF(256) Field 
 unsigned char rfc6330_gf_power(unsigned int ii);
 
 unsigned char rfc6330_gf_mult(unsigned char u, unsigned char v);
+
+unsigned char rfc6330_gf_div(unsigned char u, unsigned char v);
 
 void rfc6330_gf_mult_vec(unsigned char *result, unsigned char *v1, unsigned char *v2,  unsigned int len);
 

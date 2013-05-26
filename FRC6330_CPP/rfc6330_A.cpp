@@ -151,12 +151,12 @@ end
 	********************************/
 
 	rfc6330_tuple_t tuple;
-	for(int ii = 0; ii < NumSymbols; ii++)
+	for(unsigned int ii = 0; ii < NumSymbols; ii++)
 	{
 		rfc6330_tuple(&tuple, Params, ISIs[ii]);
 
 		Target[ (ii + S + H) * Cols + tuple.b] = 1;
-		for(int jj = 1; jj < tuple.d; jj++)
+		for(unsigned int jj = 1; jj < tuple.d; jj++)
 		{
 			tuple.b = (tuple.b + tuple.a) % W;
 			Target[ (ii + S + H) * Cols + tuple.b] ^= 1;
@@ -168,7 +168,7 @@ end
 		
 		Target[ (ii + S + H) * Cols + tuple.b1 + W] ^= 1;
 
-		for(int jj = 1; jj < tuple.d1; jj++)
+		for(unsigned int jj = 1; jj < tuple.d1; jj++)
 		{
 			tuple.b1 = (tuple.b1 + tuple.a1) % P1;
 			while (tuple.b1 >= P)

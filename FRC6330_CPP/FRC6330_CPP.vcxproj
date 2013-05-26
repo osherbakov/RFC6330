@@ -68,6 +68,7 @@
     <ClCompile Include="rfc6330_A.cpp" />
     <ClCompile Include="rfc6330_degree_dist.cpp" />
     <ClCompile Include="rfc6330_gf_gamma.cpp" />
+    <ClCompile Include="rfc6330_gf_gauss.cpp" />
     <ClCompile Include="rfc6330_gf_mult.cpp" />
     <ClCompile Include="rfc6330_K_prime.cpp" />
     <ClCompile Include="rfc6330_maintest.cpp" />
