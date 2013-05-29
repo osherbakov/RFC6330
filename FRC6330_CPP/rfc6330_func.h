@@ -81,6 +81,8 @@ void rfc6330_mult_mat(unsigned char *Result,
 						 unsigned char *G, unsigned int G_col, unsigned int G_stride,
 						 unsigned int H_Col_G_Row);
 
+unsigned int rfc6330_count_nonzeroes(unsigned char *Vector, unsigned int Size);
+
 //--------------------------
 
 unsigned int rfc6330_rand(unsigned int x, unsigned int ii, unsigned int m);

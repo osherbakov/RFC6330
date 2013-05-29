@@ -85,6 +85,20 @@ unsigned char rfc6330_gf_mult(unsigned char u, unsigned char v)
 	return ret;
 }
 
+//unsigned char rfc6330_gf_div2(unsigned char u, unsigned char v)
+//{
+//	unsigned char ret = 0;
+//	if((u==0)||(v==0))
+//		ret = 0;
+//	else
+//	{
+//		int idx = OCT_LOG[u] - OCT_LOG[v];
+//		if(idx < 0) idx += 510; 
+//		ret = OCT_EXP[ idx ];
+//	}
+//	return ret;
+//}
+
 unsigned char rfc6330_gf_div(unsigned char u, unsigned char v)
 {
 	unsigned char ret = 0;
@@ -92,13 +106,11 @@ unsigned char rfc6330_gf_div(unsigned char u, unsigned char v)
 		ret = 0;
 	else
 	{
-		int idx = OCT_LOG[u] - OCT_LOG[v];
-		if(idx < 0) idx += 510; 
+		int idx = (int)OCT_LOG[u] - (int)OCT_LOG[v] + 255;
 		ret = OCT_EXP[ idx ];
 	}
 	return ret;
 }
-
 // Old and simple (but ineffective) version of division
 //unsigned char rfc6330_gf_div(unsigned char u, unsigned char v)
 //{

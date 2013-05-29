@@ -47,77 +47,262 @@ int rfc6330_gf_gauss(unsigned char *Result,
 					  unsigned char *A, 
 					  unsigned char *Symbols, unsigned int Size)
 {
-   unsigned int row, i, j, pivot_row;
-   unsigned char max, dum, *pa, *pA, *A_pivot_row;
+   //unsigned int i, j;
+   //int row, pivot_row;
+   //unsigned char max, dum, *pCurrRow, *pA, coeff;
 
-      // for each variable find pivot row and perform forward substitution
+   //// for each variable find pivot row and perform forward substitution
+   //pCurrRow = A;
+   //for (row = 0; row < (Size - 1); row++, pCurrRow += Size) 
+   //{
+   //  //  find the pivot row
+   //   max = *(pCurrRow + row);
+   //   pA = pCurrRow + Size;
+   //   pivot_row = row;
+   //   for (i = row + 1; i < Size; pA += Size, i++)
+	  //{
+   //      if ((dum = *(pA + row)) > max) 
+		 //{ 
+   //         max = dum; 
+			//pivot_row = i; 
+		 //}
+	  //}
+   //   if (max == 0) return -1;                // the matrix A is singular
 
-   pa = A;
-   for (row = 0; row < (Size - 1); row++, pa += Size) 
-   {
-     //  find the pivot row
-      A_pivot_row = pa;
-      max = *(pa + row);
-      pA = pa + Size;
-      pivot_row = row;
-      for (i = row + 1; i < Size; pA += Size, i++)
-         if ((dum = *(pA + row)) > max) 
-		 { 
-            max = dum; 
-			A_pivot_row = pA; 
-			pivot_row = i; 
-         }
-      if (max == 0) return -1;                // the matrix A is singular
+   //   // and if it differs from the current row, interchange the two rows. 
+   //   if (pivot_row != row) 
+	  //{
+		 //pA = A + pivot_row * Size; 
+   //      for (i = row; i < Size; i++) 
+		 //{
+   //         dum = *(pCurrRow + i);
+   //         *(pCurrRow + i) = *(pA + i);
+   //         *(pA + i) = dum;
+   //      }
+   //      dum = Symbols[row];
+   //      Symbols[row] = Symbols[pivot_row];
+   //      Symbols[pivot_row] = dum;
+   //   }
 
-      // and if it differs from the current row, interchange the two rows.           
-      if (pivot_row != row) 
-	  {
-         for (i = row; i < Size; i++) 
-		 {
-            dum = *(pa + i);
-            *(pa + i) = *(A_pivot_row + i);
-            *(A_pivot_row + i) = dum;
-         }
-         dum = Symbols[row];
-         Symbols[row] = Symbols[pivot_row];
-         Symbols[pivot_row] = dum;
-      }
+   //   // Perform forward substitution
+	  //coeff = *(pCurrRow + row);
+   //   for (i = row + 1; i < Size; i++) 
+	  //{
+   //      pA = A + i * Size;		// Next row
+   //      dum =  rfc6330_gf_div(*(pA + row) , coeff);
+   //      *(pA + row) = 0;
+   //      for (j = row + 1; j < Size; j++)
+		 //{
+			//*(pA + j) ^= rfc6330_gf_mult( dum , *(pCurrRow + j));
+		 //}
+   //      Symbols[i] ^= rfc6330_gf_mult( dum , Symbols[row]);
+   //   }
+   //}
 
-      // Perform forward substitution
-      for (i = row + 1; i < Size; i++) 
-	  {
-         pA = A + i * Size;
-         dum =  rfc6330_gf_div(*(pA + row) , *(pa + row));
-         *(pA + row) = 0;
-         for (j = row + 1; j < Size; j++)
-		 {
-			*(pA + j) ^= rfc6330_gf_mult( dum , *(pa + j));
-		 }
-         Symbols[i] ^= rfc6330_gf_mult( dum , Symbols[row]);
-      }
-   }
+   //// Perform backward substitution
+   //pCurrRow = A + (Size - 1) * Size;
+   //for (row = Size - 1; row >= 0; pCurrRow -= Size, row--) 
+   //{
+   //   if ( *(pCurrRow + row) == 0 )   return -1;   // matrix is singular
 
-   // Perform backward substitution
-   pa = A + (Size - 1) * Size;
-   for (row = Size - 1; row >= 0; pa -= Size, row--) 
-   {
-      if ( *(pa + row) == 0 )   return -1;   // matrix is singular
-      dum = *(pa + row);
-      for ( i = row + 1; i < Size; i++)
-	  {
-		  *(pa + i) = rfc6330_gf_div(*(pa + i), dum); 
-	  }
-	  Symbols[row] = rfc6330_gf_div(Symbols[row], dum); 
+	  //// Find  the variable
+   //   dum = *(pCurrRow + row);
+   //   for ( i = row + 1; i < Size; i++)
+	  //{
+		 // *(pCurrRow + i) = rfc6330_gf_div(*(pCurrRow + i), dum); 
+	  //}
+	  //Symbols[row] = rfc6330_gf_div(Symbols[row], dum); 
 
-      for ( i = 0, pA = A; i < row; pA += Size, i++) 
-	  {
-         dum = *(pA + row);
-         for ( j = row + 1; j < Size; j++)
-		 {
-			 *(pA + j) ^= rfc6330_gf_mult( dum,  *(pa + j));
-		 }
-		 Symbols[i] ^= rfc6330_gf_mult( dum , Symbols[row]);
-      }
-   }
+   //   for ( i = 0, pA = A; i < row; pA += Size, i++) 
+	  //{
+   //      dum = *(pA + row);
+   //      for ( j = row + 1; j < Size; j++)
+		 //{
+			// *(pA + j) ^= rfc6330_gf_mult( dum,  *(pCurrRow + j));
+		 //}
+		 //Symbols[i] ^= rfc6330_gf_mult( dum , Symbols[row]);
+   //   }
+   //}
+
+/***********************************************
+% Reduce matrix in row echelon form
+for col = 1:COLS
+    row = col;
+    % search for a pivot
+    ind = find(A(row:end,col)) + row - 1;
+    if (isempty(ind))
+        % If cannot find any non zero row decoding failed!
+        disp('Decoding failed in Gaussian Elimination!')      % Always?
+        returnSymbols = 0;
+        return
+    else
+        pivot_row = ind(1);
+    end
+    % Exchange pivot row with the first row of matrix A
+    % Exchange symbols
+    if (pivot_row ~= row)
+        temp           = A(row,:);
+        A(row,:)       = A(pivot_row,:);
+        A(pivot_row,:) = temp;
+        TmpSymbol         = Symbol(col);
+        Symbol(col)       = Symbol(pivot_row);
+        Symbol(pivot_row) = TmpSymbol;
+    end
+    if (A(row,col) ~= 1)
+        % Normalize first coefficient of the chosen row
+        coeff    = rfc6330_findcoeff( A(row,col), 1 );
+        A(row,:) = rfc6330_gfmult_elementwise(coeff*ones(1,COLS),A(row,:));
+        % Perform the same action to the corresponding symbol
+        %disp(['Normalizing! Initially symbol at ',int2str(row),' = ',int2str(Symbol(row))])
+        %disp(['Normalizing coefficient = ',int2str(coeff)])
+        if (coeff == 1)
+        elseif (Symbol(row) == 1)
+            Symbol(row) = coeff;
+        else
+            Symbol(row) = rfc6330_gfmult(coeff,Symbol(row));
+        end
+        %disp(['After the normalization symbol at ',int2str(row),' = ',int2str(Symbol(row))])
+    end
+    % Eliminate rows
+    for irow = (row+1):ROWS
+        if (A(irow,col) ~= 0)
+            %disp(['Symbol at position ',int2str(irow),' is ',int2str(Symbol(irow))])
+            if (A(irow,col) == 1)
+                coeff = Symbol(row);
+            elseif (Symbol(row) == 1)
+                coeff = A(irow,col);
+            else
+                coeff = rfc6330_gfmult(A(irow,col),Symbol(row));
+            end
+            Symbol(irow) = bitxor(coeff,Symbol(irow));
+            mult_row     = rfc6330_gfmult_elementwise(A(irow,col)*ones(1,COLS),A(row,:));
+            A(irow,:)    = bitxor(A(irow,:),mult_row);
+        end
+    end
+end
+A = A(1:COLS,1:COLS);
+% Back-substitution
+%disp('B A C K s u b s t i t u t i o n!')
+for row = COLS-1:-1:1
+    for col = (row+1):COLS
+        if (A(row,col) ~= 0)
+            if (Symbol(col) == 0)
+                coeff = 0;
+            elseif (Symbol(col) == 1)
+                coeff = A(row,col);
+            elseif (A(row,col) == 1)
+                coeff = Symbol(col);
+            else
+                coeff = rfc6330_gfmult(A(row,col),Symbol(col));
+            end
+            Symbol(row) = bitxor(Symbol(row),coeff);
+            A(row,:) = bitxor(A(row,:),...
+                rfc6330_gfmult_elementwise(A(row,col)*ones(1,COLS),A(col,:)));
+            %disp(['Symbol at position ',int2str(col),' is ',int2str(Symbol(col))])
+        end
+    end
+end
+%rowexchanges
+returnSymbols = Symbol(1:COLS);
+************************************************/
+    int ROWS, COLS, row, col;
+	unsigned char temp, pivot_row, coeff, max, *pData, *pPivot;
+
+	ROWS = Size;
+	COLS = Size;
+
+	for(col = 0; col < COLS; col++)
+	{
+		row = col;
+		
+		pivot_row = row;
+		pData = A + row * COLS + col;	// A[row, col]
+		max = *pData; 
+		pData += COLS;					// A[row + 1, col]
+		for(int i = row + 1; i < ROWS; i++, pData += COLS)
+		{
+			if (*pData > max)
+			{
+				max = *pData; pivot_row = i;
+			}
+		}
+		if(pivot_row != row)				// If there is a pivot row - bring it to the top...
+		{
+			pPivot = A + pivot_row * COLS;  // A[pivot_row]
+			pData = A + row * COLS;			// A[row]
+			for (int i = 0; i < COLS; i++, pData++, pPivot++)
+			{
+				temp = *pData;
+				*pData = *pPivot;
+				*pPivot = temp;
+			}
+			temp = Symbols[row];
+			Symbols[row] = Symbols[pivot_row];
+			Symbols[pivot_row] = temp;
+		}
+
+		// Normalize first coeff on the diagonal
+		pData =  A + row * COLS + col;	// A[row, col]
+		if(*pData != 1)
+		{
+			coeff = rfc6330_gf_div(1, *pData);
+			for (int i = col; i < COLS; i++, pData++)
+			{
+				*pData = rfc6330_gf_mult(*pData, coeff);
+			}
+			if (coeff == 1)
+			{
+			}else if (Symbols[row] == 1)
+			{
+				Symbols[row] = coeff;
+			}else
+			{
+				Symbols[row] = rfc6330_gf_mult(coeff, Symbols[row]);
+			}
+		}
+		// Eliminate rows	
+		for (int irow = row + 1; irow < ROWS; irow++)
+		{
+			pData = A + irow * COLS + col;		// A[irow, col]
+			if(*pData)
+			{
+				if(*pData == 1)
+					coeff = Symbols[row];
+				else if (Symbols[row] == 1)
+					coeff = *pData;
+				else
+					coeff = rfc6330_gf_mult(Symbols[row], *pData);
+				Symbols[irow] ^= coeff;
+
+				pPivot = A + row * COLS + col;  // A[row, col]
+				for(int i = col; i < COLS; i++, pPivot++, pData++)
+				{
+					*pData ^= rfc6330_gf_mult(*pData, *pPivot);
+				}
+			}
+		}
+	}
+
+	// Do Backsubstitution
+	for(row = ROWS - 2; row >= 0; row--)
+	{
+		pData = A + (row + 1) * COLS + col;	// A[row + 1,col]
+		for (col = row + 1; col < COLS; col++, pData++)
+		{
+			if(*pData)
+			{
+				if(Symbols[col] == 0)
+					coeff = 0;
+				else if (Symbols[col] == 1)
+					coeff = *pData;
+				else if(*pData == 1)
+					coeff = Symbols[col];
+				else
+					coeff = rfc6330_gf_mult(*pData, Symbols[col]);
+				Symbols[row] ^= coeff;
+			}
+		}
+	}
+
    return 0;
 }
