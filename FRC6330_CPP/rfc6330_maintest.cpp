@@ -29,13 +29,12 @@ int main()
 
 	rfc6330_gf_gauss(0, InvTestA, InvTestB, 3);
 
-//	for(int i = 0; i < sizeof(op1); i++)
-//	{
-//		int u =  op1[i];
-//
-//		for (int j = 0; j < sizeof(op2); j++)
-//		{
-//			int v = op2[j];
+	for(int i = 0; i < sizeof(op1); i++)
+	{
+		int u =  op1[i];
+		for (int j = 0; j < sizeof(op2); j++)
+		{
+			int v = op2[j];
 //
 //			int d = rfc6330_gf_div(u, v);
 ////			int d1 =  rfc6330_gf_div2(u, v);
@@ -44,9 +43,9 @@ int main()
 //			int rr = rfc6330_gf_mult(v, d);
 ////			int r1 = rfc6330_gf_mult(d1, v);
 ////			int rr1 = rfc6330_gf_mult(v, d1);
-//
-//		}
-//	}
+//			int ss = rfc6330_gf_mult(v, 1);
+		}
+	}
 
 
 	rfc6330_parameters(10, &Param);

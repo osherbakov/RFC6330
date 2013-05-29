@@ -1,5 +1,7 @@
 #include "rfc6330_func.h"
 
+#define swap(a,b) {unsigned char tmp; tmp = (a); (a) = (b); (b) = (a);}while(0)
+
 /***************************************
 % Reduce matrix in row echelon form
 for col = 1:COLS
@@ -205,8 +207,8 @@ end
 %rowexchanges
 returnSymbols = Symbol(1:COLS);
 ************************************************/
-    int ROWS, COLS, row, col;
-	unsigned char temp, pivot_row, coeff, max, *pData, *pPivot;
+    int ROWS, COLS, row, col, pivot_row;
+	unsigned char coeff, *pData, *pPivot;
 
 	ROWS = Size;
 	COLS = Size;
@@ -217,13 +219,12 @@ returnSymbols = Symbol(1:COLS);
 		
 		pivot_row = row;
 		pData = A + row * COLS + col;	// A[row, col]
-		max = *pData; 
-		pData += COLS;					// A[row + 1, col]
-		for(int i = row + 1; i < ROWS; i++, pData += COLS)
+		for(int i = row; i < ROWS; i++, pData += COLS)
 		{
-			if (*pData > max)
+			if (*pData)
 			{
-				max = *pData; pivot_row = i;
+				pivot_row = i;
+				break;
 			}
 		}
 		if(pivot_row != row)				// If there is a pivot row - bring it to the top...
@@ -232,17 +233,17 @@ returnSymbols = Symbol(1:COLS);
 			pData = A + row * COLS;			// A[row]
 			for (int i = 0; i < COLS; i++, pData++, pPivot++)
 			{
-				temp = *pData;
-				*pData = *pPivot;
-				*pPivot = temp;
+				swap(*pData, *pPivot);
 			}
-			temp = Symbols[row];
-			Symbols[row] = Symbols[pivot_row];
-			Symbols[pivot_row] = temp;
+			swap(Symbols[row], Symbols[pivot_row]);
 		}
 
-		// Normalize first coeff on the diagonal
 		pData =  A + row * COLS + col;	// A[row, col]
+		if(*pData == 0)
+		{
+			return -1;			// Error - Cannot be solved...
+		}
+		// Normalize first coeff on the diagonal
 		if(*pData != 1)
 		{
 			coeff = rfc6330_gf_div(1, *pData);
