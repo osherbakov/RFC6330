@@ -217,15 +217,10 @@ returnSymbols = Symbol(1:COLS);
 	{
 		row = col;
 		
-		pivot_row = row;
 		pData = A + row * COLS + col;	// A[row, col]
-		for(int i = row; i < ROWS; i++, pData += COLS)
+		for(pivot_row = row; pivot_row < ROWS; pivot_row++, pData += COLS)
 		{
-			if (*pData)
-			{
-				pivot_row = i;
-				break;
-			}
+			if (*pData) break;
 		}
 		if(pivot_row != row)				// If there is a pivot row - bring it to the top...
 		{
@@ -251,34 +246,20 @@ returnSymbols = Symbol(1:COLS);
 			{
 				*pData = rfc6330_gf_mult(*pData, coeff);
 			}
-			if (coeff == 1)
-			{
-			}else if (Symbols[row] == 1)
-			{
-				Symbols[row] = coeff;
-			}else
-			{
-				Symbols[row] = rfc6330_gf_mult(coeff, Symbols[row]);
-			}
+			Symbols[row] = rfc6330_gf_mult(Symbols[row],coeff);
 		}
-		// Eliminate rows	
+		// Eliminate rows by adding to every row below scaled top one 	
 		for (int irow = row + 1; irow < ROWS; irow++)
 		{
+			pPivot = A + row * COLS + col;		// A[row, col]
 			pData = A + irow * COLS + col;		// A[irow, col]
-			if(*pData)
+			coeff = *pData;
+			if(coeff)
 			{
-				if(*pData == 1)
-					coeff = Symbols[row];
-				else if (Symbols[row] == 1)
-					coeff = *pData;
-				else
-					coeff = rfc6330_gf_mult(Symbols[row], *pData);
-				Symbols[irow] ^= coeff;
-
-				pPivot = A + row * COLS + col;  // A[row, col]
+				Symbols[irow] ^= rfc6330_gf_mult(Symbols[row], coeff);
 				for(int i = col; i < COLS; i++, pPivot++, pData++)
 				{
-					*pData ^= rfc6330_gf_mult(*pData, *pPivot);
+					*pData ^= rfc6330_gf_mult(*pPivot, coeff);
 				}
 			}
 		}
@@ -287,20 +268,13 @@ returnSymbols = Symbol(1:COLS);
 	// Do Backsubstitution
 	for(row = ROWS - 2; row >= 0; row--)
 	{
-		pData = A + (row + 1) * COLS + col;	// A[row + 1,col]
-		for (col = row + 1; col < COLS; col++, pData++)
+		col = row + 1;
+		pData = A + row * COLS + col;	// A[row,col]
+		for (; col < COLS; col++, pData++)
 		{
 			if(*pData)
 			{
-				if(Symbols[col] == 0)
-					coeff = 0;
-				else if (Symbols[col] == 1)
-					coeff = *pData;
-				else if(*pData == 1)
-					coeff = Symbols[col];
-				else
-					coeff = rfc6330_gf_mult(*pData, Symbols[col]);
-				Symbols[row] ^= coeff;
+				Symbols[row] ^= rfc6330_gf_mult(*pData, Symbols[col]);
 			}
 		}
 	}

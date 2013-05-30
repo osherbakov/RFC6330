@@ -24,10 +24,10 @@ int main()
 
 	unsigned int ISIs[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-	unsigned char InvTestA[] = {1, 2, 3, 1, 0, 4, 3, 1, 0};
-	unsigned char InvTestB[] = {0, 1, 2};
+	unsigned char InvTestA[] = {1, 2, 3, 1,   0, 4, 3, 1,  0, 6, 1, 1,  3, 5, 0, 0 };
+	unsigned char InvTestB[] = {0, 1, 2, 3};
 
-	rfc6330_gf_gauss(0, InvTestA, InvTestB, 3);
+	rfc6330_gf_gauss(0, InvTestA, InvTestB, 4);
 
 	for(int i = 0; i < sizeof(op1); i++)
 	{
