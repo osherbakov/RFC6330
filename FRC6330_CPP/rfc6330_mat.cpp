@@ -3,10 +3,9 @@
 void rfc6330_eye(unsigned char *Target, unsigned int nStride, unsigned int Size)
 {
 	unsigned int Step = nStride + 1;
-	for(unsigned int i = 0; i < Size; i++)
+	for(unsigned int i = 0; i < Size; i++, Target += Step)
 	{
 		*Target = 1;
-		Target += Step;
 	}
 }
 
@@ -24,31 +23,31 @@ void rfc6330_zero(unsigned char *Target, unsigned int nStride, unsigned int numR
 }
 
 void rfc6330_mult_mat(unsigned char *Result,
-						 unsigned char *H, unsigned int H_row, unsigned int H_stride, 
-						 unsigned char *G, unsigned int G_col, unsigned int G_stride,
-						 unsigned int H_Col_G_Row)
+						 unsigned char *H, unsigned int H_row, unsigned int H_col, 
+						 unsigned char *G, unsigned int G_row, unsigned int G_col )
 {
 	unsigned char *p_H, *p_G;
 	unsigned char Data;
+	
+	if(H_col != G_row) return;
 
-	for (unsigned int i = 0; i < H_row; i++)
+	for (unsigned int row = 0; row < H_row; row++)
 	{
-		for (unsigned int j = 0; j < G_col; j++)
+		for (unsigned int col = 0; col < G_col; col++)
 		{
-			p_H = H + H_stride * i;
-			p_G = G + j;
+			p_H = H + H_col * row;
+			p_G = G + col;
 			Data = 0;
-			for (unsigned int k = 0; k < H_Col_G_Row; k++)
+			for (unsigned int k = 0; k < H_col; k++)
 			{
-				Data ^= (*p_H ^ *p_G);
+				Data += (*p_H * *p_G);
 				p_H++;
-				p_G += G_stride;
+				p_G += G_col;
 			}
 			*Result++ = Data;
 		}
 	}
 }
-
 
 void rfc6330_copy_mat(unsigned char *Result, unsigned int nStride,
 						 unsigned char *H, unsigned int H_stride,

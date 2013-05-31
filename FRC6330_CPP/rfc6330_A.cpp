@@ -19,7 +19,7 @@ void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *IS
 	Rows = S + H + NumSymbols;
 	Cols = L;
 	Gamma = (unsigned char *) calloc(Rows * Cols, 1);
-
+	rfc6330_zero(Target, Cols, Rows, Cols);
 	/******************
 % LDPC Symbols
 % See section 5.3.3.3 Pre-coding relationships
@@ -177,6 +177,8 @@ end
 			}
 			Target[ (ii + S + H) * Cols + tuple.b1 + W] ^= 1;
 		}
-
 	}
+	free(Gamma);
+	free(Tmp1);
+	free(Tmp2);
 }

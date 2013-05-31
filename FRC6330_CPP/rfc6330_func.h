@@ -77,9 +77,9 @@ void rfc6330_copy_mat(unsigned char *Result, unsigned int nStride,
 						 unsigned int Rows, unsigned int Cols);
 
 void rfc6330_mult_mat(unsigned char *Result,
-						 unsigned char *H, unsigned int H_row, unsigned int H_stride, 
-						 unsigned char *G, unsigned int G_col, unsigned int G_stride,
-						 unsigned int H_Col_G_Row);
+						 unsigned char *H, unsigned int H_row, unsigned int H_col, 
+						 unsigned char *G, unsigned int G_row, unsigned int G_col 
+						  );
 
 unsigned int rfc6330_count_nonzeroes(unsigned char *Vector, unsigned int Size);
 

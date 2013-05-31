@@ -17,7 +17,7 @@ int main()
 
 	unsigned char Dest[27];
 
-	unsigned char *Gamma = (unsigned char *) calloc(13*13, 1);
+	unsigned char *Gamma = (unsigned char *) calloc(13 * 13, 1);
 
 
 	unsigned char *Target = (unsigned char *) calloc(27 * 27, 1);
@@ -26,8 +26,12 @@ int main()
 
 	unsigned char InvTestA[] = {1, 2, 3, 1,   0, 4, 3, 1,  0, 6, 1, 1,  3, 5, 0, 0 };
 	unsigned char InvTestB[] = {0, 1, 2, 3};
+	unsigned char TestA[4*4];
+	unsigned char TestB[4];
 
+	rfc6330_copy_mat(TestA, 4, InvTestA, 4, 4, 4);
 	rfc6330_gf_gauss(0, InvTestA, InvTestB, 4);
+	rfc6330_gf_mult_mat(TestB, TestA, 4, 4, InvTestB, 4, 1);
 
 	for(int i = 0; i < sizeof(op1); i++)
 	{
@@ -54,5 +58,7 @@ int main()
 
 	rfc6330_A(Target, &Param, ISIs, 10);
 	rfc6330_gf_mult_mat(Dest, Target, 27, 27, D, 27, 1); 
+	free(Gamma);
+	free(Target);
 
 }

@@ -155,19 +155,19 @@ function val = rfc6330_gfmult_elementwise( v1, v2 )
 %
 
 if (length(v1) ~= length(v2))
-    error('Input vector sizes not equal!')
+	error('Input vector sizes not equal!')
 end
 val = zeros(1,length(v1));
 for ii = 1:length(v1)
-    if ((v1(ii) == 0)||(v2(ii) == 0))
-        val(ii) = 0;
-    elseif (v1(ii) == 1)
-        val(ii) = v2(ii);
-    elseif (v2(ii) == 1)
-        val(ii) = v1(ii);
-    else
-        val(ii) = rfc6330_gfmult(v1(ii),v2(ii));
-    end
+	if ((v1(ii) == 0)||(v2(ii) == 0))
+		val(ii) = 0;
+	elseif (v1(ii) == 1)
+		val(ii) = v2(ii);
+	elseif (v2(ii) == 1)
+		val(ii) = v1(ii);
+	else
+		val(ii) = rfc6330_gfmult(v1(ii),v2(ii));
+	end
 end
 *************************/
 void rfc6330_gf_mult_vec(unsigned char *result, unsigned char *v1, unsigned char *v2,  unsigned int len)
@@ -191,25 +191,25 @@ unction A = rfc6330_gfMatrixMult( H, G )
 [HROWS HCOLS] = size(H);
 [GROWS GCOLS] = size(G);
 if ( HCOLS ~= GROWS )
-    error('Matrix sizes do not fit!')
+	error('Matrix sizes do not fit!')
 end
 
 A = zeros(HROWS,GCOLS);
 for ii = 1:HROWS
-    for jj = 1:GCOLS
-        for kk = 1:HCOLS
-            if ((H(ii,kk) == 0)||(G(kk,jj) == 0))
-                coeff = 0;
-            elseif (H(ii,kk) == 1)
-                coeff = G(kk,jj);
-            elseif (G(kk,jj) == 1)
-                coeff = H(ii,kk);
-            else
-                coeff = rfc6330_gfmult(H(ii,kk),G(kk,jj));
-            end
-            A(ii,jj) = bitxor(A(ii,jj),coeff);
-        end
-    end
+	for jj = 1:GCOLS
+		for kk = 1:HCOLS
+			if ((H(ii,kk) == 0)||(G(kk,jj) == 0))
+				coeff = 0;
+			elseif (H(ii,kk) == 1)
+				coeff = G(kk,jj);
+			elseif (G(kk,jj) == 1)
+				coeff = H(ii,kk);
+			else
+				coeff = rfc6330_gfmult(H(ii,kk),G(kk,jj));
+			end
+			A(ii,jj) = bitxor(A(ii,jj),coeff);
+		end
+	end
 end
 *****************************/
 void rfc6330_gf_mult_mat(unsigned char *Result,
@@ -218,19 +218,21 @@ void rfc6330_gf_mult_mat(unsigned char *Result,
 {
 	unsigned char *p_H, *p_G;
 	unsigned char Data;
+
+	if(H_col != G_row) return;
 	
-	for (unsigned int i = 0; i < H_row; i++)
+	for (unsigned int row = 0; row < H_row; row++)
 	{
-		for (unsigned int j = 0; j < G_col; j++)
+		for (unsigned int col = 0; col < G_col; col++)
 		{
-			p_H = H + H_col * i;
-			p_G = G + j;
+			p_H = H + H_col * row;
+			p_G = G + col;
 			Data = 0;
 			for (unsigned int k = 0; k < H_col; k++)
 			{
 				Data ^= rfc6330_gf_mult(*p_H, *p_G);
-				p_G += G_col;
 				p_H++;
+				p_G += G_col;
 			}
 			*Result++ = Data;
 		}
