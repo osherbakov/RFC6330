@@ -3,6 +3,7 @@
 void rfc6330_eye(unsigned char *Target, unsigned int nStride, unsigned int Size)
 {
 	unsigned int Step = nStride + 1;
+	rfc6330_zero(Target, nStride, Size, Size);
 	for(unsigned int i = 0; i < Size; i++, Target += Step)
 	{
 		*Target = 1;

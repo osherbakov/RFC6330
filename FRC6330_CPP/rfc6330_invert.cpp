@@ -389,15 +389,15 @@ processed = [zeros(1,S) ones(1,H) zeros(1,ROWS-S-H)];
 	bool process_hdpc = false;
 
 	// Allocate vectors
-	c = (unsigned int *) calloc(COLS, sizeof(int));
-	d = (unsigned int *) calloc(ROWS, sizeof(int));
-	weights = (unsigned int *) calloc(ROWS, sizeof(int));
+	c = (unsigned int *) malloc(COLS * sizeof(int));
+	d = (unsigned int *) malloc(ROWS * sizeof(int));
+	weights = (unsigned int *) malloc(ROWS * sizeof(int));
 
-	X = (unsigned char *) calloc(ROWS * COLS, 1);	
-	V = (unsigned char *) calloc(ROWS * COLS, 1);
+	X = (unsigned char *) malloc(ROWS * COLS);	
+	V = (unsigned char *) malloc(ROWS * COLS);
 
-	hdpc = (unsigned int *) calloc(H, sizeof(int));
-	processed = (bool *) calloc(ROWS, sizeof(bool));
+	hdpc = (unsigned int *) malloc(H * sizeof(int));
+	processed = (bool *) malloc(ROWS * sizeof(bool));
 
 	// Initialize vectors
 	for(int i = 0; i < COLS; i++) c[i] = i;

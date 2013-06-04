@@ -18,7 +18,7 @@ void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *IS
 
 	Rows = S + H + NumSymbols;
 	Cols = L;
-	Gamma = (unsigned char *) calloc(Rows * Cols, 1);
+	Gamma = (unsigned char *) malloc(Rows * Cols);
 	rfc6330_zero(Target, Cols, Rows, Cols);
 	/******************
 % LDPC Symbols
@@ -110,8 +110,8 @@ A((S + 1):(S + H),1:(K_prime + S)) = ...
     rfc6330_gamma( K_prime, S ) );
 ******************************/	
 	unsigned int GammaSize = K_prime + S;
-	unsigned char *Tmp1 =  (unsigned char *) calloc(H * GammaSize, 1);
-	unsigned char *Tmp2 =  (unsigned char *) calloc(H * GammaSize, 1);
+	unsigned char *Tmp1 =  (unsigned char *) malloc(H * GammaSize);
+	unsigned char *Tmp2 =  (unsigned char *) malloc(H * GammaSize);
 
 	rfc6330_gf_gamma(Gamma, GammaSize);
 	rfc6330_copy_mat(Tmp1, GammaSize, &Target[S * Cols + 0], Cols, H, GammaSize);

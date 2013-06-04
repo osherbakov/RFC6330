@@ -27,6 +27,7 @@ function Gamma = rfc6330_gamma( K_prime, S )
 void rfc6330_gf_gamma(unsigned char *Target, unsigned Size)
 {
 	unsigned char *Gamma;
+	rfc6330_zero(Target, Size, Size, Size);
 	for (unsigned int jj = 0; jj < Size; jj++)
 	{
 		Gamma = Target +  jj * Size + jj;

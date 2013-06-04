@@ -17,10 +17,10 @@ int main()
 
 	unsigned char Dest[27];
 
-	unsigned char *Gamma = (unsigned char *) calloc(13 * 13, 1);
+	unsigned char *Gamma = (unsigned char *) malloc(13 * 13);
 
 
-	unsigned char *Target = (unsigned char *) calloc(27 * 27, 1);
+	unsigned char *Target = (unsigned char *) malloc(27 * 27);
 
 	unsigned int ISIs[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
