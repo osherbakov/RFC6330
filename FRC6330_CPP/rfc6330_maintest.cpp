@@ -30,7 +30,7 @@ int main()
 	unsigned char TestB[4];
 
 	rfc6330_copy_mat(TestA, 4, InvTestA, 4, 4, 4);
-	rfc6330_gf_gauss(0, InvTestA, InvTestB, 4);
+	rfc6330_gf_gauss(0, InvTestA, InvTestB, 1, 4);
 	rfc6330_gf_mult_mat(TestB, TestA, 4, 4, InvTestB, 4, 1);
 
 	for(int i = 0; i < sizeof(op1); i++)
@@ -54,7 +54,7 @@ int main()
 
 	rfc6330_parameters(10, &Param);
 	rfc6330_A(Target, &Param, ISIs, 10);
-	rfc6330_gf_gauss(0, Target, D, 27);
+	rfc6330_gf_gauss(0, Target, D, 1, 27);
 
 	rfc6330_A(Target, &Param, ISIs, 10);
 	rfc6330_gf_mult_mat(Dest, Target, 27, 27, D, 27, 1); 

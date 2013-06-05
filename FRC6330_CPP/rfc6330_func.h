@@ -49,7 +49,12 @@ void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *IS
 
 int rfc6330_gf_gauss(unsigned char *Result, 
 					  unsigned char *A, 
-					  unsigned char *Symbols, unsigned int Size);
+					  unsigned char *Symbols, unsigned int BytesPerSymbol,
+					  unsigned int Size);
+
+void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params, 
+					unsigned char *IntermediateSymbols, unsigned int BytesPerSymbol, 
+					unsigned int *ISIs, unsigned int Size);
 
 //  Operations on the GF(256) Field 
 unsigned char rfc6330_gf_power(unsigned int ii);
@@ -59,6 +64,10 @@ unsigned char rfc6330_gf_mult(unsigned char u, unsigned char v);
 unsigned char rfc6330_gf_div(unsigned char u, unsigned char v);
 
 void rfc6330_gf_mult_vec(unsigned char *result, unsigned char *v1, unsigned char *v2,  unsigned int len);
+
+void rfc6330_gf_scale_vec(unsigned char *result, unsigned char *v1, unsigned char scale,  unsigned int len);
+
+void rfc6330_gf_scale_xor_vec(unsigned char *result, unsigned char *v1, unsigned char scale,  unsigned int len);
 
 void rfc6330_gf_mult_mat(unsigned char *Result,
 						 unsigned char *H, unsigned int H_row, unsigned int H_col, 
@@ -82,6 +91,12 @@ void rfc6330_mult_mat(unsigned char *Result,
 						  );
 
 unsigned int rfc6330_count_nonzeroes(unsigned char *Vector, unsigned int Size);
+
+void rfc6330_copy_vec(unsigned char *Result, unsigned char *Src, unsigned int Size);
+
+void rfc6330_xor_vec(unsigned char *Result, unsigned char *v1, unsigned char *v2, unsigned int Size);
+
+void rfc6330_swap_vec(unsigned char *v1, unsigned char *v2, unsigned int Size);
 
 //--------------------------
 

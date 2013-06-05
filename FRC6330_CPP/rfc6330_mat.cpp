@@ -66,3 +66,32 @@ void rfc6330_copy_mat(unsigned char *Result, unsigned int nStride,
 		}
 	}
 }
+
+void rfc6330_copy_vec(unsigned char *Result, unsigned char *Src, unsigned int Size)
+{
+	for(unsigned int i = 0; i < Size; i++)
+	{
+		*Result++ = *Src++;
+	}
+}
+
+void rfc6330_xor_vec(unsigned char *Result, unsigned char *v1, unsigned char *v2, unsigned int Size)
+{
+	for(unsigned int i = 0; i < Size; i++)
+	{
+		*Result = *v1 ^ *v2;
+		Result++; v1++; v2++;
+	}
+}
+
+void rfc6330_swap_vec(unsigned char *v1, unsigned char *v2, unsigned int Size)
+{
+	unsigned char tmp;
+	for(unsigned int i = 0; i < Size; i++)
+	{
+		tmp = *v1;
+		*v1 = *v2;
+		*v2 = tmp;
+		v1++; v2++;
+	}
+}

@@ -51,19 +51,20 @@ end
 #include "rfc6330_func.h"
 
 void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params, 
-					unsigned char *IntermediateSymbols, 
+					unsigned char *IntermediateSymbols, unsigned int BytesPerSymbol, 
 					unsigned int *ISIs, unsigned int Size)
 {
 	rfc6330_tuple_t tuple;
-	unsigned char Data;
+	unsigned char *pData;
 	for (unsigned int ii = 0; ii < Size; ii++)
 	{
+		pData = &Result[ii * BytesPerSymbol];
 		rfc6330_tuple(&tuple, Params, ISIs[ii]);
-		Data = IntermediateSymbols[tuple.b];
+		rfc6330_copy_vec(pData, &IntermediateSymbols[tuple.b * BytesPerSymbol], BytesPerSymbol);
 		for(unsigned int jj = 1; jj < tuple.d; jj++)
 		{
 			tuple.b = (tuple.b + tuple.a) % Params->W;
-			Data ^= IntermediateSymbols[tuple.b];
+			rfc6330_xor_vec(pData, pData, &IntermediateSymbols[tuple.b * BytesPerSymbol], BytesPerSymbol);
 		}
 
 		// Look for the appropriate index
@@ -71,7 +72,7 @@ void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params,
 		{
 			tuple.b1 = (tuple.b1 + tuple.a1) % Params->P1;
 		}		
-		Data ^= IntermediateSymbols[Params->W + tuple.b1];
+		rfc6330_xor_vec(pData, pData, &IntermediateSymbols[(Params->W + tuple.b1) * BytesPerSymbol], BytesPerSymbol);
 
 		for(unsigned int jj = 1; jj < tuple.d1; jj++)
 		{
@@ -81,9 +82,7 @@ void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params,
 			{
 				tuple.b1 = (tuple.b1 + tuple.a1) % Params->P1;
 			}
-			Data ^= IntermediateSymbols[Params->W + tuple.b1];
+			rfc6330_xor_vec(pData, pData, &IntermediateSymbols[(Params->W + tuple.b1) * BytesPerSymbol], BytesPerSymbol);
 		}
-		
-		Result[ii] = Data;		 
 	}
 }

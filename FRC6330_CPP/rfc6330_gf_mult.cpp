@@ -174,10 +174,28 @@ void rfc6330_gf_mult_vec(unsigned char *result, unsigned char *v1, unsigned char
 {
 	while(len--)
 	{
-		*result++ = rfc6330_gf_mult(*v1++, *v2++);
+		*result = rfc6330_gf_mult(*v1, *v2);
+		result++; v1++; v2++;
 	}
 }
 
+void rfc6330_gf_scale_vec(unsigned char *result, unsigned char *v1, unsigned char scale,  unsigned int len)
+{
+	while(len--)
+	{
+		*result = rfc6330_gf_mult(*v1, scale);
+		result++; v1++;
+	}
+}
+
+void rfc6330_gf_scale_xor_vec(unsigned char *result, unsigned char *v1, unsigned char scale,  unsigned int len)
+{
+	while(len--)
+	{
+		*result ^= rfc6330_gf_mult(*v1, scale);
+		result++; v1++;
+	}
+}
 /****************************
 unction A = rfc6330_gfMatrixMult( H, G )
 %

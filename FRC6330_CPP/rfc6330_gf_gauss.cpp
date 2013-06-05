@@ -47,7 +47,8 @@ end
 
 int rfc6330_gf_gauss(unsigned char *Result, 
 					  unsigned char *A, 
-					  unsigned char *Symbols, unsigned int Size)
+					  unsigned char *Symbols, unsigned int BytesPerSymbol,
+					  unsigned int Size)
 {
    //unsigned int i, j;
    //int row, pivot_row;
@@ -230,7 +231,7 @@ returnSymbols = Symbol(1:COLS);
 			{
 				swap(*pData, *pPivot);
 			}
-			swap(Symbols[row], Symbols[pivot_row]);
+			rfc6330_swap_vec(&Symbols[row * BytesPerSymbol], &Symbols[pivot_row * BytesPerSymbol], BytesPerSymbol);
 		}
 
 		pData =  A + row * COLS + col;	// A[row, col]
@@ -246,7 +247,8 @@ returnSymbols = Symbol(1:COLS);
 			{
 				*pData = rfc6330_gf_mult(*pData, coeff);
 			}
-			Symbols[row] = rfc6330_gf_mult(Symbols[row],coeff);
+			// Symbols[row] = rfc6330_gf_mult(Symbols[row],coeff);
+			rfc6330_gf_scale_vec(&Symbols[row * BytesPerSymbol], &Symbols[row * BytesPerSymbol], coeff, BytesPerSymbol);
 		}
 		// Eliminate rows by adding to every row below scaled top one 	
 		for (int irow = row + 1; irow < ROWS; irow++)
@@ -256,7 +258,8 @@ returnSymbols = Symbol(1:COLS);
 			coeff = *pData;
 			if(coeff)
 			{
-				Symbols[irow] ^= rfc6330_gf_mult(Symbols[row], coeff);
+				// Symbols[irow] ^= rfc6330_gf_mult(Symbols[row], coeff);
+				rfc6330_gf_scale_xor_vec(&Symbols[irow * BytesPerSymbol], &Symbols[row * BytesPerSymbol], coeff, BytesPerSymbol);
 				for(int i = col; i < COLS; i++, pPivot++, pData++)
 				{
 					*pData ^= rfc6330_gf_mult(*pPivot, coeff);
@@ -272,9 +275,11 @@ returnSymbols = Symbol(1:COLS);
 		pData = A + row * COLS + col;	// A[row,col]
 		for (; col < COLS; col++, pData++)
 		{
-			if(*pData)
+			coeff = *pData;
+			if(coeff)
 			{
-				Symbols[row] ^= rfc6330_gf_mult(*pData, Symbols[col]);
+				// Symbols[row] ^= rfc6330_gf_mult(Symbols[col], coeff );
+				rfc6330_gf_scale_xor_vec(&Symbols[row * BytesPerSymbol], &Symbols[col * BytesPerSymbol], coeff, BytesPerSymbol);
 			}
 		}
 	}

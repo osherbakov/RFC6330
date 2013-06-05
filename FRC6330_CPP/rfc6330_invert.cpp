@@ -351,7 +351,7 @@ void rfc6330_invert(unsigned char *IntermediateSymbols,
 	unsigned char * Symbols,
 	unsigned int NumSymbols)
 {
-	int ROWS, COLS;
+	unsigned int ROWS, COLS;
 	unsigned int S, H, B, P, W, L, U, K_prime, P1;
 	K_prime = Params->K_prime;
 	S = Params->S;
@@ -400,11 +400,11 @@ processed = [zeros(1,S) ones(1,H) zeros(1,ROWS-S-H)];
 	processed = (bool *) malloc(ROWS * sizeof(bool));
 
 	// Initialize vectors
-	for(int i = 0; i < COLS; i++) c[i] = i;
-	for(int i = 0; i < ROWS; i++) d[i] = i;
-	for(int i = 0; i < H; i++) hdpc[i] = S + i;
+	for(unsigned int i = 0; i < COLS; i++) c[i] = i;
+	for(unsigned int i = 0; i < ROWS; i++) d[i] = i;
+	for(unsigned int i = 0; i < H; i++) hdpc[i] = S + i;
 	rfc6330_copy_mat(X, ROWS, A, ROWS, ROWS, COLS);
-	for(int i = 0; i < H; i++) processed[S+i] = true;
+	for(unsigned int i = 0; i < H; i++) processed[S+i] = true;
 
 
 	ii = 0;
