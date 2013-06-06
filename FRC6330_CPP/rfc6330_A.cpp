@@ -1,5 +1,5 @@
 #include "rfc6330_func.h"
-#include "stdlib.h"
+
 
 void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *ISIs, unsigned int NumSymbols)
 {

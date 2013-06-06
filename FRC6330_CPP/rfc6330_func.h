@@ -1,5 +1,7 @@
 #ifndef RFC6330_H
 #define RFC6330_H
+#include "stdlib.h"
+#include "string.h"
 
 unsigned int rfc6330_deg(
 	unsigned int v,
@@ -48,13 +50,18 @@ void rfc6330_tuple( rfc6330_tuple_t *tuple, rfc6330_params_t *param, unsigned in
 void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *ISIs, unsigned int NumSymbols);
 
 int rfc6330_gf_gauss(unsigned char *Result, 
+					  rfc6330_params_t * Params, 
 					  unsigned char *A, 
 					  unsigned char *Symbols, unsigned int BytesPerSymbol,
-					  unsigned int Size);
+					  unsigned int NumSymbols);
 
 void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params, 
 					unsigned char *IntermediateSymbols, unsigned int BytesPerSymbol, 
-					unsigned int *ISIs, unsigned int Size);
+					unsigned int *ESIs, unsigned int Size);
+
+void rfc6330_encode_block(unsigned char *Result, unsigned int NumSymbols,
+						  unsigned char *Source,  unsigned int BytesPerSymbol,
+						  unsigned int NumSrcBytes);
 
 //  Operations on the GF(256) Field 
 unsigned char rfc6330_gf_power(unsigned int ii);

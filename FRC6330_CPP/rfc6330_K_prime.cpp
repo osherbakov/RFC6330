@@ -555,41 +555,31 @@ function [S H B U L W P P1] = rfc6330_parameters( K_prime )
 void rfc6330_parameters(unsigned int K,
 						rfc6330_params_t *params)
 {
-	for (unsigned int i = 0; i < sizeof(K_prime_table); i++)
+	unsigned int i;
+	for (i = 0; (i < sizeof(K_prime_table)) && (K_prime_table[i] < K); i++)
 	{
-		if (K_prime_table[i] > K)
-		{
-			i--;
-			params->K_prime =  Coding_table[i * 6 + 0];
-			params->J = Coding_table[i * 6 + 1];
-			params->S = Coding_table[i * 6 + 2];
-			params->H = Coding_table[i * 6 + 3];
-			params->W = Coding_table[i * 6 + 4];
-			params->P1 = Coding_table[i * 6 + 5];
-
-			params->L =  params->K_prime + params->S + params->H;
-			params->P = params->L - params->W;
-			params->U = params->P - params->H;
-			params->B = params->W - params->S;
-
-			break;
-		}
 	}
+	params->K_prime =  Coding_table[i * 6 + 0];
+	params->J = Coding_table[i * 6 + 1];
+	params->S = Coding_table[i * 6 + 2];
+	params->H = Coding_table[i * 6 + 3];
+	params->W = Coding_table[i * 6 + 4];
+	params->P1 = Coding_table[i * 6 + 5];
+
+	params->L =  params->K_prime + params->S + params->H;
+	params->P = params->L - params->W;
+	params->U = params->P - params->H;
+	params->B = params->W - params->S;
 
 }
 
 unsigned int rfc6330_K_prime(
 	unsigned int K)
 {
-	unsigned int K_prime = 0;
-	for (unsigned int i = 0; i < sizeof(K_prime_table); i++)
+	unsigned int i;
+	for (i = 0; (i < sizeof(K_prime_table)) && (K_prime_table[i] < K); i++)
 	{
-		if (K_prime_table[i] > K)
-		{
-			i--;
-			K_prime = K_prime_table[i];
-			break;
-		}
 	}
-	return K_prime;
+
+	return K_prime_table[i];
 }

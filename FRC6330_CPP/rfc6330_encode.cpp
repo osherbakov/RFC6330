@@ -50,16 +50,72 @@ end
 *********************************/
 #include "rfc6330_func.h"
 
+void rfc6330_encode_block(unsigned char *Result,  unsigned int NumSymbols,
+						  unsigned char *Source, unsigned int BytesPerSymbol, 
+						  unsigned int NumSrcBytes)
+{
+	rfc6330_params_t Params;
+	unsigned int K, S, H, B, P, W, L, U, K_prime, P1;
+	unsigned int *ISIs, *ESIs;
+	unsigned char *A;
+	unsigned char *Symbols;
+	unsigned int ROWS, COLS;
+
+	K = (NumSrcBytes + (BytesPerSymbol >> 1))/BytesPerSymbol;
+	if (K == 0) return;
+
+	rfc6330_parameters(K, &Params);
+	K_prime = Params.K_prime;
+	S = Params.S;
+	H = Params.H;
+	B = Params.B;
+	P = Params.P;
+	W = Params.W;
+	L = Params.L;
+	U = Params.U;
+	P1 = Params.P1;
+	
+	ROWS = S + H + K_prime;
+	COLS = L;
+	// Zero pad the sourse symbols at the end to create an Extended block
+	// Additionally, allocate S + H (or L - K_Prime) zero symbols at the beginning
+	{
+		Symbols = (unsigned char *) malloc(ROWS * BytesPerSymbol);
+		memset(Symbols, 0, ROWS  * BytesPerSymbol);
+		memcpy(Symbols + (S + H) * BytesPerSymbol, Source, NumSrcBytes);
+	}
+	// Create ISI array
+	ISIs = (unsigned int *) malloc(K_prime * sizeof(unsigned int));
+	for (unsigned int i=0; i < K_prime; i++) ISIs[i] = i;
+
+	// Calculate the A matrix for intermediate symbols calculations
+	A = (unsigned char *) malloc( ROWS * COLS);
+	rfc6330_A(A, &Params, ISIs, K_prime);
+
+	// Now calculate all intermediate symbols
+	rfc6330_gf_gauss(0, &Params, A, Symbols, BytesPerSymbol, ROWS);
+
+	// Generate all the required symbols (systemic + repair).
+	// Skip generation of the zero-padding symbols at the end
+	ESIs = (unsigned int *) malloc(NumSymbols * sizeof(unsigned int));
+	for (unsigned int i=0; i < NumSymbols; i++) ESIs[i] = i < K ? i : (K_prime - K) + i;
+	rfc6330_encode(Result, &Params, Symbols, BytesPerSymbol, ESIs, NumSymbols);
+	free(ESIs);
+	free(ISIs);
+	free(A);
+	free(Symbols);
+}
+
 void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params, 
 					unsigned char *IntermediateSymbols, unsigned int BytesPerSymbol, 
-					unsigned int *ISIs, unsigned int Size)
+					unsigned int *ESIs, unsigned int NumSymbols)
 {
 	rfc6330_tuple_t tuple;
 	unsigned char *pData;
-	for (unsigned int ii = 0; ii < Size; ii++)
+	for (unsigned int ii = 0; ii < NumSymbols; ii++)
 	{
 		pData = &Result[ii * BytesPerSymbol];
-		rfc6330_tuple(&tuple, Params, ISIs[ii]);
+		rfc6330_tuple(&tuple, Params, ESIs[ii]);
 		rfc6330_copy_vec(pData, &IntermediateSymbols[tuple.b * BytesPerSymbol], BytesPerSymbol);
 		for(unsigned int jj = 1; jj < tuple.d; jj++)
 		{

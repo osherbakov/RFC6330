@@ -175,6 +175,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\FRC6330_CPP\rfc6330_decode.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\FRC6330_CPP\rfc6330_degree_dist.cpp"
 				>
 			</File>

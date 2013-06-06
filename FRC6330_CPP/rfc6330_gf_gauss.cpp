@@ -46,9 +46,10 @@ end
 ****************************************/
 
 int rfc6330_gf_gauss(unsigned char *Result, 
+					  rfc6330_params_t * Params, 
 					  unsigned char *A, 
 					  unsigned char *Symbols, unsigned int BytesPerSymbol,
-					  unsigned int Size)
+					  unsigned int NumSymbols)
 {
    //unsigned int i, j;
    //int row, pivot_row;
@@ -211,13 +212,13 @@ returnSymbols = Symbol(1:COLS);
     int ROWS, COLS, row, col, pivot_row;
 	unsigned char coeff, *pData, *pPivot;
 
-	ROWS = Size;
-	COLS = Size;
+	ROWS = NumSymbols;
+	COLS = Params->L;
 
 	for(col = 0; col < COLS; col++)
 	{
 		row = col;
-		
+		// Findthefirst non-zero row
 		pData = A + row * COLS + col;	// A[row, col]
 		for(pivot_row = row; pivot_row < ROWS; pivot_row++, pData += COLS)
 		{
@@ -258,7 +259,6 @@ returnSymbols = Symbol(1:COLS);
 			coeff = *pData;
 			if(coeff)
 			{
-				// Symbols[irow] ^= rfc6330_gf_mult(Symbols[row], coeff);
 				rfc6330_gf_scale_xor_vec(&Symbols[irow * BytesPerSymbol], &Symbols[row * BytesPerSymbol], coeff, BytesPerSymbol);
 				for(int i = col; i < COLS; i++, pPivot++, pData++)
 				{
@@ -278,11 +278,13 @@ returnSymbols = Symbol(1:COLS);
 			coeff = *pData;
 			if(coeff)
 			{
-				// Symbols[row] ^= rfc6330_gf_mult(Symbols[col], coeff );
 				rfc6330_gf_scale_xor_vec(&Symbols[row * BytesPerSymbol], &Symbols[col * BytesPerSymbol], coeff, BytesPerSymbol);
 			}
 		}
 	}
-
+	
+	if(Result)
+		rfc6330_copy_vec(Result, Symbols, BytesPerSymbol * NumSymbols);
+		
    return 0;
 }
