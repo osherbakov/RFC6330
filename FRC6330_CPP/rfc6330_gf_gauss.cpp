@@ -269,7 +269,7 @@ returnSymbols = Symbol(1:COLS);
 	}
 
 	// Do Backsubstitution
-	for(row = ROWS - 2; row >= 0; row--)
+	for(row = COLS - 2; row >= 0; row--)
 	{
 		col = row + 1;
 		pData = A + row * COLS + col;	// A[row,col]
@@ -284,7 +284,7 @@ returnSymbols = Symbol(1:COLS);
 	}
 	
 	if(Result)
-		rfc6330_copy_vec(Result, Symbols, BytesPerSymbol * NumSymbols);
+		rfc6330_copy_vec(Result, Symbols, BytesPerSymbol * COLS);
 		
    return 0;
 }
