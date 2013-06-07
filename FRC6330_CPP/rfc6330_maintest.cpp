@@ -56,9 +56,10 @@ int main()
 	unsigned char *A = (unsigned char *) malloc(27 * 27);
 
 	unsigned int ISIs[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	unsigned int ESIs[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
 
-	rfc6330_encode_block(Dest, 10, Source, 2, 10);
-
+	rfc6330_encode_block(Dest, 20, Source, 1, 10);
+	rfc6330_decode_block(D, 10, Dest, 1, ESIs, 15);
 
 
 	rfc6330_parameters(10, &Param);

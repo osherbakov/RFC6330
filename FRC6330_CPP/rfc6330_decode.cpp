@@ -37,7 +37,7 @@ int rfc6330_decode_block(unsigned char *Result, unsigned int NumResultBytes,
 
 	// Generate AESI (Actual ESI) for all the symbols (systemic + repair + ZeroFill).
 	AESIs = (unsigned int *) malloc(ANS * sizeof(unsigned int));
-	memcpy(AESIs, ESIs, NumSymbols * BytesPerSymbol); 
+	memcpy(AESIs, ESIs, NumSymbols * sizeof(unsigned int)); 
 	for (unsigned int i = NumSymbols; i < ANS; i++) AESIs[i] = K + i;
 
 	// Create ISI array - it will be used to generate the original symbols

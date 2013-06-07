@@ -63,6 +63,10 @@ void rfc6330_encode_block(unsigned char *Result, unsigned int NumSymbols,
 						  unsigned char *Source,  unsigned int BytesPerSymbol,
 						  unsigned int NumSrcBytes);
 
+int rfc6330_decode_block(unsigned char *Result, unsigned int NumResultBytes,  
+						  unsigned char *Source, unsigned int BytesPerSymbol, 
+						  unsigned int *ESIs, unsigned int NumSymbols);
+
 //  Operations on the GF(256) Field 
 unsigned char rfc6330_gf_power(unsigned int ii);
 

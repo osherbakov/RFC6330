@@ -218,7 +218,7 @@ returnSymbols = Symbol(1:COLS);
 	for(col = 0; col < COLS; col++)
 	{
 		row = col;
-		// Findthefirst non-zero row
+		// Find the first non-zero row
 		pData = A + row * COLS + col;	// A[row, col]
 		for(pivot_row = row; pivot_row < ROWS; pivot_row++, pData += COLS)
 		{
