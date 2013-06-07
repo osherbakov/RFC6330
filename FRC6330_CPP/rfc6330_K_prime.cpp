@@ -535,7 +535,7 @@ function [S H B U L W P P1] = rfc6330_parameters( K_prime )
 	%   H - number of HDPC symbols
 	%   P - number of permanently inactive symbols (HDPC + set of K_prime)
 	%   W - number of LT symbols (LDPC + set of K_prime)
-	% 
+	%	L - number of intermediate symbols
 	%
 	ind = find(Table2(:,1) == K_prime);
 	S = Table2(ind,3);
