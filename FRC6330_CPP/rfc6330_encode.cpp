@@ -79,11 +79,9 @@ void rfc6330_encode_block(unsigned char *Result,  unsigned int NumSymbols,
 	COLS = L;
 	// Zero pad the sourse symbols at the end to create an Extended block
 	// Additionally, allocate S + H (or L - K_Prime) zero symbols at the beginning
-	{
-		Symbols = (unsigned char *) malloc(ROWS * BytesPerSymbol);
-		memset(Symbols, 0, ROWS  * BytesPerSymbol);
-		memcpy(Symbols + (S + H) * BytesPerSymbol, Source, NumSrcBytes);
-	}
+	Symbols = (unsigned char *) malloc(ROWS * BytesPerSymbol);
+	memset(Symbols, 0, ROWS  * BytesPerSymbol);
+	memcpy(Symbols + (S + H) * BytesPerSymbol, Source, NumSrcBytes);
 	// Create ISI array
 	ISIs = (unsigned int *) malloc(K_prime * sizeof(unsigned int));
 	for (unsigned int i=0; i < K_prime; i++) ISIs[i] = i;
@@ -101,8 +99,8 @@ void rfc6330_encode_block(unsigned char *Result,  unsigned int NumSymbols,
 	for (unsigned int i=0; i < NumSymbols; i++) ESIs[i] = i < K ? i : (K_prime - K) + i;
 	rfc6330_encode(Result, &Params, Symbols, BytesPerSymbol, ESIs, NumSymbols);
 	free(ESIs);
-	free(ISIs);
 	free(A);
+	free(ISIs);
 	free(Symbols);
 }
 

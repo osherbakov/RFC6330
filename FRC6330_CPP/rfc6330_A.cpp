@@ -178,7 +178,7 @@ end
 			Target[ (ii + S + H) * Cols + tuple.b1 + W] ^= 1;
 		}
 	}
-	free(Gamma);
+        free(Tmp2);
 	free(Tmp1);
-	free(Tmp2);
+	free(Gamma);
 }

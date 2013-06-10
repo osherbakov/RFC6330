@@ -10,7 +10,7 @@ int rfc6330_decode_block(unsigned char *Result, unsigned int NumResultBytes,
 	unsigned char *A;
 	unsigned char *Symbols;
 	unsigned int ROWS, COLS, ANS;
-	int ret = 0;
+	int ret = -1;
 
 	K = (NumResultBytes + (BytesPerSymbol >> 1))/BytesPerSymbol;
 	if ( (K == 0) || (K > NumSymbols)) return -1;
@@ -51,16 +51,16 @@ int rfc6330_decode_block(unsigned char *Result, unsigned int NumResultBytes,
 	rfc6330_A(A, &Params, AESIs, ANS);
 
 	// Now calculate all COLS intermediate symbols
-	if( rfc6330_gf_gauss(0, &Params, A, Symbols, BytesPerSymbol, COLS) >= 0)
+	if( rfc6330_gf_gauss(0, &Params, A, Symbols, BytesPerSymbol, COLS) == 0)
 	{
 		// Generate the original symbols
 		rfc6330_encode(Result, &Params, Symbols, BytesPerSymbol, ISIs, K);
-	}else
-		ret = -1;
+                ret = 0;
+	}
 
-	free(AESIs);
-	free(ISIs);
 	free(A);
+	free(ISIs);
+	free(AESIs);
 	free(Symbols);
 	return ret;
 }
