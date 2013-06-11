@@ -55,7 +55,7 @@ int rfc6330_decode_block(unsigned char *Result, unsigned int NumResultBytes,
 	{
 		// Generate the original symbols
 		rfc6330_encode(Result, &Params, Symbols, BytesPerSymbol, ISIs, K);
-                ret = 0;
+        ret = 0;
 	}
 
 	free(A);

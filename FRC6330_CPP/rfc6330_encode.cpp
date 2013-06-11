@@ -50,13 +50,14 @@ end
 *********************************/
 #include "rfc6330_func.h"
 
-void rfc6330_encode_block(unsigned char *Result,  unsigned int NumSymbols,
+void rfc6330_encode_block(unsigned char *Result, unsigned int *ESIs,  
+						  unsigned int NumSymbols,
 						  unsigned char *Source, unsigned int BytesPerSymbol, 
 						  unsigned int NumSrcBytes)
 {
 	rfc6330_params_t Params;
 	unsigned int K, S, H, B, P, W, L, U, K_prime, P1;
-	unsigned int *ISIs, *ESIs;
+	unsigned int *ISIs;
 	unsigned char *A;
 	unsigned char *Symbols;
 	unsigned int ROWS, COLS;
@@ -95,10 +96,8 @@ void rfc6330_encode_block(unsigned char *Result,  unsigned int NumSymbols,
 
 	// Generate all the required symbols (systemic + repair).
 	// Skip generation of the zero-padding symbols at the end
-	ESIs = (unsigned int *) malloc(NumSymbols * sizeof(unsigned int));
 	for (unsigned int i=0; i < NumSymbols; i++) ESIs[i] = i < K ? i : (K_prime - K) + i;
 	rfc6330_encode(Result, &Params, Symbols, BytesPerSymbol, ESIs, NumSymbols);
-	free(ESIs);
 	free(A);
 	free(ISIs);
 	free(Symbols);

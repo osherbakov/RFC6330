@@ -2,6 +2,7 @@
 #define RFC6330_H
 #include "stdlib.h"
 #include "string.h"
+#include "stdio.h"
 
 unsigned int rfc6330_deg(
 	unsigned int v,
@@ -59,7 +60,8 @@ void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params,
 					unsigned char *IntermediateSymbols, unsigned int BytesPerSymbol, 
 					unsigned int *ESIs, unsigned int Size);
 
-void rfc6330_encode_block(unsigned char *Result, unsigned int NumSymbols,
+void rfc6330_encode_block(unsigned char *Result, unsigned int *ESIs, 
+						  unsigned int NumSymbols,
 						  unsigned char *Source,  unsigned int BytesPerSymbol,
 						  unsigned int NumSrcBytes);
 

@@ -38,36 +38,19 @@ void test_mat()
 	rfc6330_gf_mult_mat(TestB, TestA, 4, 4, InvTestB, 4, 1);
 }
 
+extern void Erasure_test();
 
 int main()
 {
-	rfc6330_params_t Param;
+	
+	unsigned char Source[] = {73, 110, 32, 116, 104, 101, 32, 98, 101, 103, 105};
+	unsigned char Dest[30];
+	unsigned char D[30];
 
-
-	unsigned char Source[] = {1,2,3,4,5,6,7,8,9,10};
-	unsigned char D[] = {0,0,0,0,0,
-		0,0,0,0,0,
-		0,0,0,0,0,
-		0,0,
-		1,2,3,4,5,6,7,8,9,10};
-
-	unsigned char Dest[27];
-
-	unsigned char *A = (unsigned char *) malloc(27 * 27);
-
-	unsigned int ISIs[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	unsigned int ESIs[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
 
-	rfc6330_encode_block(Dest, 10, Source, 2, 8);
-	rfc6330_decode_block(D, 8, Dest, 2, ESIs, 10);
-
-
-	rfc6330_parameters(10, &Param);
-	rfc6330_A(A, &Param, ISIs, 10);
-	rfc6330_gf_gauss(0, &Param, A, D, 1, 27);
-
-	rfc6330_A(A, &Param, ISIs, 10);
-	rfc6330_gf_mult_mat(Dest, A, 27, 27, D, 27, 1); 
-	free(A);
+	Erasure_test();
+	rfc6330_encode_block(Dest, ESIs, 20, Source, 1, 11);
+	rfc6330_decode_block(D, 11, Dest, 1, ESIs, 20);
 
 }
