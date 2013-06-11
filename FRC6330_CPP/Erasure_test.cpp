@@ -1,11 +1,11 @@
 #include "rfc6330_func.h"
 
 
-#define num_symbols (3)
+#define num_symbols (10)
 #define num_generated_symbols (30)
 #define bytes_per_symbol  (1)
 
-#define erasure  (0.3f)
+#define erasure  (0.6f)
 
 #define source_bytes (num_symbols * bytes_per_symbol)
 
