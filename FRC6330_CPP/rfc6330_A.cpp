@@ -6,6 +6,8 @@ void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *IS
 	unsigned int Rows, Cols;
 	unsigned char *Gamma;
 	unsigned int S, H, B, P, W, L, U, K_prime, P1;
+	unsigned int GammaSize;
+
 	K_prime = Params->K_prime;
 	S = Params->S;
 	H = Params->H;
@@ -18,7 +20,9 @@ void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *IS
 
 	Rows = S + H + NumSymbols;
 	Cols = L;
-	Gamma = (unsigned char *) malloc(Rows * Cols);
+        GammaSize = K_prime + S;
+        
+        
 	rfc6330_zero(Target, Cols, Rows, Cols);
 	/******************
 % LDPC Symbols
@@ -109,7 +113,8 @@ A((S + 1):(S + H),1:(K_prime + S)) = ...
     rfc6330_gfMatrixMult( A((S + 1):(S + H),1:(K_prime + S)), ...
     rfc6330_gamma( K_prime, S ) );
 ******************************/	
-	unsigned int GammaSize = K_prime + S;
+
+	Gamma = (unsigned char *) malloc(GammaSize * GammaSize);
 	unsigned char *Tmp1 =  (unsigned char *) malloc(H * GammaSize);
 	unsigned char *Tmp2 =  (unsigned char *) malloc(H * GammaSize);
 

@@ -1,8 +1,8 @@
 #include "rfc6330_func.h"
 #include "Streaming.h"
 
-#define num_symbols (20)
-#define num_generated_symbols (30)
+#define num_symbols (11)
+#define num_generated_symbols (50 )
 #define bytes_per_symbol  (1)
 #define source_bytes (num_symbols * bytes_per_symbol)
 
@@ -17,7 +17,7 @@ unsigned int ESIs[num_generated_symbols];
 
 
 /*----------- */
-unsigned int heap[2300];
+unsigned int heap[2500];
 void *p_heap;
 void *halloc(unsigned int mem_size)
 {
@@ -39,7 +39,7 @@ void setup()
   uint32_t time_start, time_end;
   p_heap = &heap[0];
 
-  float erasure = 0.0;
+  float erasure = 0.3;
 
   Serial.begin(115200);
 
@@ -65,19 +65,16 @@ void setup()
       if( (rand() % 100) >= (int)(erasure * 100))
       {
         memcpy(Received + rcvd_idx * bytes_per_symbol, Encoded + i * bytes_per_symbol, bytes_per_symbol); 
-        ESIs[rcvd_idx] = i;
-        rcvd_idx++;
-        
+        ESIs[rcvd_idx++] = i;
+       
         if(rcvd_idx >= num_symbols)
         {
           ret = rfc6330_decode_block(Dest, source_bytes, Received, bytes_per_symbol, ESIs, rcvd_idx);
-
-         if( ret == 0)
+          if( ret == 0)
           {
             // decoded
             time_end = micros();
-            Serial << "****************** " << i << "  " << rcvd_idx << " *********" << endl;
-            Serial.println("Received symbols indices:");
+            Serial << "Received " << rcvd_idx << " symbols:";
             for(int k = 0; k < rcvd_idx; k++)    Serial << ESIs[k] << " ";  
             Serial << "Time Elapsed = " << (time_end - time_start) << " us" << endl;
             Serial << "Compare Src and DST = " << memcmp(Source, Dest, source_bytes) << endl;

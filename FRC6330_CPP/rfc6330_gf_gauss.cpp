@@ -1,6 +1,6 @@
 #include "rfc6330_func.h"
 
-#define swap(a,b) {unsigned char tmp; tmp = (a); (a) = (b); (b) = (a);}while(0)
+#define swap(a,b) {unsigned char tmp; tmp = (a); (a) = (b); (b) = (tmp);}while(0)
 
 /***************************************
 % Reduce matrix in row echelon form
@@ -220,14 +220,11 @@ returnSymbols = Symbol(1:COLS);
 		row = col;
 		// Find the first non-zero row
 		pData = A + row * COLS + col;	// A[row, col]
-		for(pivot_row = row; pivot_row < ROWS; pivot_row++, pData += COLS)
-		{
-			if (*pData) break;
-		}
-		if(pivot_row != row)				// If there is a pivot row - bring it to the top...
+		for(pivot_row = row; (*pData == 0) && (pivot_row < ROWS); pivot_row++, pData += COLS){}
+		if((pivot_row < ROWS) && (pivot_row != row))				// If there is a pivot row - bring it to the top...
 		{
 			pPivot = A + pivot_row * COLS;  // A[pivot_row]
-			pData = A + row * COLS;			// A[row]
+			pData = A + row * COLS;		// A[row]
 			for (int i = 0; i < COLS; i++, pData++, pPivot++)
 			{
 				swap(*pData, *pPivot);
@@ -259,11 +256,11 @@ returnSymbols = Symbol(1:COLS);
 			coeff = *pData;
 			if(coeff)
 			{
-				rfc6330_gf_scale_xor_vec(&Symbols[irow * BytesPerSymbol], &Symbols[row * BytesPerSymbol], coeff, BytesPerSymbol);
 				for(int i = col; i < COLS; i++, pPivot++, pData++)
 				{
 					*pData ^= rfc6330_gf_mult(*pPivot, coeff);
 				}
+				rfc6330_gf_scale_xor_vec(&Symbols[irow * BytesPerSymbol], &Symbols[row * BytesPerSymbol], coeff, BytesPerSymbol);
 			}
 		}
 	}
