@@ -1,17 +1,13 @@
 #include "rfc6330_func.h"
+#include "Streaming.h"
 
-
-#define num_symbols (10)
-#define num_generated_symbols (30)
+#define num_symbols (11)
+#define num_generated_symbols (50 )
 #define bytes_per_symbol  (1)
-
-#define erasure  (0.6f)
-
 #define source_bytes (num_symbols * bytes_per_symbol)
 
 
-
-unsigned char Source[source_bytes]; // = {73, 110, 32, 116, 104, 101, 32, 98, 101, 103, 105 , 110, 110, /* 105, 110, 103*/};
+unsigned char Source[source_bytes];
 unsigned char Encoded[num_generated_symbols * bytes_per_symbol];
 unsigned char Received[num_generated_symbols * bytes_per_symbol];
 unsigned char Dest[source_bytes];
@@ -36,25 +32,31 @@ void hfree(void *p_mem)
 }
 /*************/
 
-void Erasure_test()
+void setup()
 {
   int  ret;
 
+  uint32_t time_start, time_end;
   p_heap = &heap[0];
 
+  float erasure = 0.3;
 
+  Serial.begin(115200);
 
-  printf("*******Starting********\n");
+  delay(5000);
+
+  Serial << "*******Starting********" << endl;
   
-//  Serial << "p_heap = 0x" << _HEX((int) p_heap) <<  endl;
+  Serial << "p_heap = 0x" << _HEX((int) p_heap) <<  endl;
 
   // Populate the Source with data from 1 to 100
-   for(int i = 0; i < source_bytes; i++) Source[i] = i + 1;
+  for(int i = 0; i < source_bytes; i++) Source[i] = i + 1;
 
   while(1)
   {
 
     rfc6330_encode_block(Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
+    time_start = micros();
 
     // Simulate the erasure channel
     int rcvd_idx = 0;
@@ -63,7 +65,7 @@ void Erasure_test()
       if( (rand() % 100) >= (int)(erasure * 100))
       {
         memcpy(Received + rcvd_idx * bytes_per_symbol, Encoded + i * bytes_per_symbol, bytes_per_symbol); 
-        ESIs[rcvd_idx++] = ESIs[i];
+        ESIs[rcvd_idx++] = i;
        
         if(rcvd_idx >= num_symbols)
         {
@@ -71,14 +73,15 @@ void Erasure_test()
           if( ret == 0)
           {
             // decoded
-			  printf("Received %d symbols:", rcvd_idx);
-            for(int k = 0; k < rcvd_idx; k++)    printf("%d ", ESIs[k]);  //
-//            Serial << "Time Elapsed = " << (time_end - time_start) << " us" << endl;
-            printf("Compare Src and DST = 0x%04x\n", memcmp(Source, Dest, source_bytes));
+            time_end = micros();
+            Serial << "Received " << rcvd_idx << " symbols:";
+            for(int k = 0; k < rcvd_idx; k++)    Serial << ESIs[k] << " ";  
+            Serial << "Time Elapsed = " << (time_end - time_start) << " us" << endl;
+            Serial << "Compare Src and DST = " << memcmp(Source, Dest, source_bytes) << endl;
             break;
           }else
           {
-			  printf( "Extra symbol needed: Symb[%d] = ESI[%d]\n", rcvd_idx, i);
+            Serial << "****************** " << i << "  " << rcvd_idx << " *********" << endl;
           }
         }
 
@@ -86,6 +89,12 @@ void Erasure_test()
     }
 
   }
+
+}
+
+void loop()
+{
+
 
 }
 

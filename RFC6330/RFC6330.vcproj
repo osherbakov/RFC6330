@@ -1,12 +1,11 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="RFC6330"
-	ProjectGUID="{1765D815-6529-420F-895E-19056D1B935D}"
+	ProjectGUID="{BD638501-1633-4499-B3B5-70AF6C8712E5}"
 	RootNamespace="RFC6330"
-	Keyword="Win32Proj"
-	TargetFrameworkVersion="0"
+	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
 		<Platform
@@ -18,9 +17,10 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -40,13 +40,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;"
+				AdditionalIncludeDirectories="C:\arduino-1.0.4\hardware\teensy\cores\teensy3;C:\arduino-1.0.4\libraries\Streaming;C:\arduino-1.0.4\libraries\Streaming\utility;C:\arduino-1.0.4\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.4\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.4\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include;C:\arduino-1.0.4\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include\;"
+				PreprocessorDefinitions="__ARM-NONE-EABI_MK20DX128__;ARDUINO=104;ARDUINO_MAIN;__AVR__;F_CPU=48000000;USB_SERIAL;LAYOUT_US_ENGLISH;__cplusplus;__MK20DX128__"
+				IgnoreStandardIncludePath="true"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				ForcedIncludeFiles="C:\Projects\RFC6330\RFC6330\Visual Micro\.RFC6330.vsarduino.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -59,9 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -88,9 +88,11 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -109,9 +111,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
 				RuntimeLibrary="2"
-				UsePrecompiledHeader="0"
+				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -126,9 +129,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -160,30 +161,10 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
-			<File
-				RelativePath=".\rfc6330_func.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
-		</Filter>
-		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\Erasure_test.cpp"
-				>
-			</File>
 			<File
 				RelativePath=".\rfc6330_A.cpp"
 				>
@@ -221,10 +202,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\rfc6330_maintest.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\rfc6330_mat.cpp"
 				>
 			</File>
@@ -237,7 +214,73 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
+			<File
+				RelativePath=".\Visual Micro\.RFC6330.vsarduino.h"
+				>
+			</File>
+			<File
+				RelativePath=".\rfc6330_func.h"
+				FileType="0"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
+		</Filter>
+		<File
+			RelativePath=".\RFC6330.ino"
+			FileType="0"
+			>
+		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="arduino.board.desc"
+			Value="Teensy 3.0"
+		/>
+		<Global
+			Name="arduino.board.name"
+			Value="teensy3"
+		/>
+		<Global
+			Name="arduino.board.property_bag"
+			Value="name=Teensy 3.0&#x0D;&#x0A;upload.protocol=halfkay&#x0D;&#x0A;upload.maximum_size=131072&#x0D;&#x0A;upload.maximum_ram_size=16384&#x0D;&#x0A;upload.speed=12000000&#x0D;&#x0A;upload.disable_flushing=true&#x0D;&#x0A;bootloader.path=undefined&#x0D;&#x0A;serial.restart_cmd=true&#x0D;&#x0A;serial.safe_baud_rates_only=true&#x0D;&#x0A;upload.avrdude_wrapper=teensy_reboot&#x0D;&#x0A;build.mcu=mk20dx128&#x0D;&#x0A;build.cpu=cortex-m4&#x0D;&#x0A;build.option1=-mthumb&#x0D;&#x0A;build.option2=-nostdlib&#x0D;&#x0A;build.option3=-D__MK20DX128__&#x0D;&#x0A;build.cppoption1=-fno-rtti&#x0D;&#x0A;build.linkoption1=-mthumb&#x0D;&#x0A;build.linkscript=mk20dx128.ld&#x0D;&#x0A;build.architecture=arm-none-eabi&#x0D;&#x0A;build.command.gcc=arm-none-eabi-gcc&#x0D;&#x0A;build.command.g++=arm-none-eabi-g++&#x0D;&#x0A;build.command.ar=arm-none-eabi-ar&#x0D;&#x0A;build.command.objcopy=arm-none-eabi-objcopy&#x0D;&#x0A;build.command.objdump=arm-none-eabi-objdump&#x0D;&#x0A;build.command.size=arm-none-eabi-size&#x0D;&#x0A;build.core=teensy3&#x0D;&#x0A;build.noarchive=true&#x0D;&#x0A;build.elide_constructors=true&#x0D;&#x0A;build.gnu0x=true&#x0D;&#x0A;build.dependency=true&#x0D;&#x0A;build.time_t=true&#x0D;&#x0A;build.post_compile_script=teensy_post_compile&#x0D;&#x0A;menu.usb.serial.name=Serial&#x0D;&#x0A;menu.usb.serial.build.define0=-DUSB_SERIAL&#x0D;&#x0A;menu.usb.hid.name=Keyboard + Mouse + Joystick&#x0D;&#x0A;menu.usb.hid.build.define0=-DUSB_HID&#x0D;&#x0A;menu.usb.hid.fake_serial=teensy_gateway&#x0D;&#x0A;menu.usb.serialhid.name=Serial + Keyboard + Mouse + Joystick&#x0D;&#x0A;menu.usb.serialhid.build.define0=-DUSB_SERIAL_HID&#x0D;&#x0A;menu.usb.midi.name=MIDI&#x0D;&#x0A;menu.usb.midi.build.define0=-DUSB_MIDI&#x0D;&#x0A;menu.usb.midi.fake_serial=teensy_gateway&#x0D;&#x0A;menu.usb.rawhid.name=Raw HID&#x0D;&#x0A;menu.usb.rawhid.build.define0=-DUSB_RAWHID&#x0D;&#x0A;menu.usb.rawhid.fake_serial=teensy_gateway&#x0D;&#x0A;menu.usb.flightsim.name=Flight Sim Controls&#x0D;&#x0A;menu.usb.flightsim.build.define0=-DUSB_FLIGHTSIM&#x0D;&#x0A;menu.usb.flightsim.fake_serial=teensy_gateway&#x0D;&#x0A;menu.speed.96.name=96 MHz (overclock)&#x0D;&#x0A;menu.speed.48.name=48 MHz&#x0D;&#x0A;menu.speed.24.name=24 MHz&#x0D;&#x0A;menu.speed.96.build.f_cpu=96000000&#x0D;&#x0A;menu.speed.48.build.f_cpu=48000000&#x0D;&#x0A;menu.speed.24.build.f_cpu=24000000&#x0D;&#x0A;menu.keys.en-us.name=US English&#x0D;&#x0A;menu.keys.en-us.build.define1=-DLAYOUT_US_ENGLISH&#x0D;&#x0A;menu.keys.fr-ca.name=Canadian French&#x0D;&#x0A;menu.keys.fr-ca.build.define1=-DLAYOUT_CANADIAN_FRENCH&#x0D;&#x0A;menu.keys.xx-ca.name=Canadian Multilingual&#x0D;&#x0A;menu.keys.xx-ca.build.define1=-DLAYOUT_CANADIAN_MULTILINGUAL&#x0D;&#x0A;menu.keys.da-da.name=Danish&#x0D;&#x0A;menu.keys.da-da.build.define1=-DLAYOUT_DANISH&#x0D;&#x0A;menu.keys.fi-fi.name=Finnish&#x0D;&#x0A;menu.keys.fi-fi.build.define1=-DLAYOUT_FINNISH&#x0D;&#x0A;menu.keys.fr-fr.name=French&#x0D;&#x0A;menu.keys.fr-fr.build.define1=-DLAYOUT_FRENCH&#x0D;&#x0A;menu.keys.fr-be.name=French Belgian&#x0D;&#x0A;menu.keys.fr-be.build.define1=-DLAYOUT_FRENCH_BELGIAN&#x0D;&#x0A;menu.keys.fr-ch.name=French Swiss&#x0D;&#x0A;menu.keys.fr-ch.build.define1=-DLAYOUT_FRENCH_SWISS&#x0D;&#x0A;menu.keys.de-de.name=German&#x0D;&#x0A;menu.keys.de-de.build.define1=-DLAYOUT_GERMAN&#x0D;&#x0A;menu.keys.de-dm.name=German (Mac)&#x0D;&#x0A;menu.keys.de-dm.build.define1=-DLAYOUT_GERMAN_MAC&#x0D;&#x0A;menu.keys.de-ch.name=German Swiss&#x0D;&#x0A;menu.keys.de-ch.build.define1=-DLAYOUT_GERMAN_SWISS&#x0D;&#x0A;menu.keys.is-is.name=Icelandic&#x0D;&#x0A;menu.keys.is-is.build.define1=-DLAYOUT_ICELANDIC&#x0D;&#x0A;menu.keys.en-ie.name=Irish&#x0D;&#x0A;menu.keys.en-ie.build.define1=-DLAYOUT_IRISH&#x0D;&#x0A;menu.keys.it-it.name=Italian&#x0D;&#x0A;menu.keys.it-it.build.define1=-DLAYOUT_ITALIAN&#x0D;&#x0A;menu.keys.no-no.name=Norwegian&#x0D;&#x0A;menu.keys.no-no.build.define1=-DLAYOUT_NORWEGIAN&#x0D;&#x0A;menu.keys.pt-pt.name=Portuguese&#x0D;&#x0A;menu.keys.pt-pt.build.define1=-DLAYOUT_PORTUGUESE&#x0D;&#x0A;menu.keys.pt-br.name=Portuguese Brazilian&#x0D;&#x0A;menu.keys.pt-br.build.define1=-DLAYOUT_PORTUGUESE_BRAZILIAN&#x0D;&#x0A;menu.keys.es-es.name=Spanish&#x0D;&#x0A;menu.keys.es-es.build.define1=-DLAYOUT_SPANISH&#x0D;&#x0A;menu.keys.es-mx.name=Spanish Latin America&#x0D;&#x0A;menu.keys.es-mx.build.define1=-DLAYOUT_SPANISH_LATIN_AMERICA&#x0D;&#x0A;menu.keys.sv-se.name=Swedish&#x0D;&#x0A;menu.keys.sv-se.build.define1=-DLAYOUT_SWEDISH&#x0D;&#x0A;menu.keys.tr-tr.name=Turkish (partial)&#x0D;&#x0A;menu.keys.tr-tr.build.define1=-DLAYOUT_TURKISH&#x0D;&#x0A;menu.keys.en-gb.name=United Kingdom&#x0D;&#x0A;menu.keys.en-gb.build.define1=-DLAYOUT_UNITED_KINGDOM&#x0D;&#x0A;menu.keys.usint.name=US International&#x0D;&#x0A;menu.keys.usint.build.define1=-DLAYOUT_US_INTERNATIONAL&#x0D;&#x0A;runtime.ide.path=C:\arduino-1.0.4&#x0D;&#x0A;build.system.path=C:\arduino-1.0.4\hardware\teensy\system&#x0D;&#x0A;software=ARDUINO&#x0D;&#x0A;runtime.ide.version=104&#x0D;&#x0A;vm.core.include=arduino.h&#x0D;&#x0A;vm.boardsource.path=C:\arduino-1.0.4\hardware\teensy&#x0D;&#x0A;vm.boardsource.name=boards.txt&#x0D;&#x0A;vm.platformname.name=&#x0D;&#x0A;compiler.path=C:\arduino-1.0.4\hardware\tools\arm-none-eabi\bin\&#x0D;&#x0A;includes= -I&quot;C:\arduino-1.0.4\hardware\teensy\cores\teensy3&quot;  -I&quot;C:\arduino-1.0.4\libraries\Streaming&quot; &#x0D;&#x0A;build.path=C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3&#x0D;&#x0A;build.project_name=RFC6330&#x0D;&#x0A;build.variant.path=&#x0D;&#x0A;archive_file=core.a&#x0D;&#x0A;object_file=&quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_tuple.cpp.o&quot;&#x0D;&#x0A;source_file=&quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_tuple.cpp&quot;&#x0D;&#x0A;object_files=&quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\Erasure_test.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\RFC6330.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_A.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_decode.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_degree_dist.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_encode.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_gf_gamma.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_gf_gauss.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_gf_mult.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_invert.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_K_prime.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_maintest.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_mat.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_rand.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\rfc6330_tuple.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\analog.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\eeprom.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\keylayouts.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\mk20dx128.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\nonstd.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\pins_teensy.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\serial1.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\serial2.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\serial3.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\touch.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_desc.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_dev.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_joystick.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_keyboard.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_mem.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_midi.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_mouse.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_rawhid.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_seremu.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_serial.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\yield.c.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\HardwareSerial1.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\HardwareSerial2.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\HardwareSerial3.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\IntervalTimer.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\IPAddress.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\main.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\Print.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\Stream.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\Tone.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_flightsim.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\usb_inst.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\WMath.cpp.o&quot; &quot;C:\Users\Admin\AppData\Local\VMicro\Arduino\Builds\RFC6330\teensy3\WString.cpp.o&quot; &#x0D;&#x0A;"
+		/>
+		<Global
+			Name="arduino.build.core"
+			Value="teensy3"
+		/>
+		<Global
+			Name="arduino.build.f_cpu"
+			Value=""
+		/>
+		<Global
+			Name="arduino.build.mcu"
+			Value="mk20dx128"
+		/>
+		<Global
+			Name="arduino.upload.maximum_size"
+			Value="131072"
+		/>
+		<Global
+			Name="arduino.upload.protocol"
+			Value="halfkay"
+		/>
+		<Global
+			Name="arduino.upload.speed"
+			Value="12000000"
+		/>
+		<Global
+			Name="VM_ADDITIONAL_PREPROC"
+			Value="F_CPU=48000000;USB_SERIAL;LAYOUT_US_ENGLISH"
+		/>
 	</Globals>
 </VisualStudioProject>

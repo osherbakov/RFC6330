@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RFC6330", "RFC6330.vcproj", "{1765D815-6529-420F-895E-19056D1B935D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RFC6330", "RFC6330.vcproj", "{BD638501-1633-4499-B3B5-70AF6C8712E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1765D815-6529-420F-895E-19056D1B935D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1765D815-6529-420F-895E-19056D1B935D}.Debug|Win32.Build.0 = Debug|Win32
-		{1765D815-6529-420F-895E-19056D1B935D}.Release|Win32.ActiveCfg = Release|Win32
-		{1765D815-6529-420F-895E-19056D1B935D}.Release|Win32.Build.0 = Release|Win32
+		{BD638501-1633-4499-B3B5-70AF6C8712E5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BD638501-1633-4499-B3B5-70AF6C8712E5}.Debug|Win32.Build.0 = Debug|Win32
+		{BD638501-1633-4499-B3B5-70AF6C8712E5}.Release|Win32.ActiveCfg = Release|Win32
+		{BD638501-1633-4499-B3B5-70AF6C8712E5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

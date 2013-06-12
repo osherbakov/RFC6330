@@ -15,7 +15,7 @@ function val = rfc6330_deg( v, W )
 
 **************************/
 
-unsigned int dist_table[] = {
+unsigned int const dist_table[] = {
 	0,
 	5243,
 	529531,
