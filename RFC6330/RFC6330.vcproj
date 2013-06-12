@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="RFC6330"
 	ProjectGUID="{1765D815-6529-420F-895E-19056D1B935D}"
+	RootNamespace="RFC6330"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="0"
 	>
@@ -45,7 +46,6 @@
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -113,7 +113,6 @@
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
