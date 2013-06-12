@@ -1,9 +1,10 @@
 #include "rfc6330_func.h"
 #include "Streaming.h"
 
-#define num_symbols (11)
-#define num_generated_symbols (50 )
-#define bytes_per_symbol  (1)
+#define erasure (0.6)
+#define num_symbols (10)
+#define num_generated_symbols (30 )
+#define bytes_per_symbol  (10)
 #define source_bytes (num_symbols * bytes_per_symbol)
 
 
@@ -16,7 +17,7 @@ unsigned int ESIs[num_generated_symbols];
 
 
 
-/*----------- */
+/*-----------
 unsigned int heap[2500];
 void *p_heap;
 void *halloc(unsigned int mem_size)
@@ -30,16 +31,14 @@ void hfree(void *p_mem)
 {
   p_heap = p_mem;
 }
-/*************/
+*************/
 
 void setup()
 {
   int  ret;
 
   uint32_t time_start, time_end;
-  p_heap = &heap[0];
-
-  float erasure = 0.3;
+//  p_heap = &heap[0];
 
   Serial.begin(115200);
 
@@ -47,7 +46,7 @@ void setup()
 
   Serial << "*******Starting********" << endl;
   
-  Serial << "p_heap = 0x" << _HEX((int) p_heap) <<  endl;
+//  Serial << "p_heap = 0x" << _HEX((int) p_heap) <<  endl;
 
   // Populate the Source with data from 1 to 100
   for(int i = 0; i < source_bytes; i++) Source[i] = i + 1;
@@ -65,7 +64,7 @@ void setup()
       if( (rand() % 100) >= (int)(erasure * 100))
       {
         memcpy(Received + rcvd_idx * bytes_per_symbol, Encoded + i * bytes_per_symbol, bytes_per_symbol); 
-        ESIs[rcvd_idx++] = i;
+        ESIs[rcvd_idx++] = ESIs[i];
        
         if(rcvd_idx >= num_symbols)
         {
@@ -81,7 +80,7 @@ void setup()
             break;
           }else
           {
-            Serial << "****************** " << i << "  " << rcvd_idx << " *********" << endl;
+            Serial << "****************** Extra Symbol needed *********" << endl;
           }
         }
 
