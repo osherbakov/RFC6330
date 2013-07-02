@@ -3,10 +3,12 @@
 
 #define erasure (0.6)
 #define num_symbols (10)
-#define num_generated_symbols (30 )
+#define num_generated_symbols (30)
 #define bytes_per_symbol  (10)
 #define source_bytes (num_symbols * bytes_per_symbol)
 
+// The LED is attached to pin 13 on Arduino, pin 6 on Teensy++ 2.0.
+const uint8_t LED_PIN = 13;
 
 unsigned char Source[source_bytes];
 unsigned char Encoded[num_generated_symbols * bytes_per_symbol];
@@ -14,35 +16,15 @@ unsigned char Received[num_generated_symbols * bytes_per_symbol];
 unsigned char Dest[source_bytes];
 unsigned int ESIs[num_generated_symbols];
 
-
-
-
-/*-----------
-unsigned int heap[2500];
-void *p_heap;
-void *halloc(unsigned int mem_size)
-{
-  void *ret = p_heap;
-  p_heap = (void *) ( (unsigned int) p_heap + mem_size);
-  return ret;
-}
-
-void hfree(void *p_mem)
-{
-  p_heap = p_mem;
-}
-*************/
-
 void setup()
 {
   int  ret;
 
   uint32_t time_start, time_end;
-//  p_heap = &heap[0];
 
   Serial.begin(115200);
-
-  delay(5000);
+  while(!Serial) {}
+  
 
   Serial << "*******Starting********" << endl;
   
