@@ -14,8 +14,9 @@ function val = rfc6330_deg( v, W )
 	%
 
 **************************/
+#include "rfc6330_func.h"
 
-unsigned int const dist_table[] = {
+uint32_t const dist_table[] = {
 	0,
 	5243,
 	529531,

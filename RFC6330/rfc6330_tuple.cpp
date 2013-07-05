@@ -25,14 +25,14 @@ b1 = rfc6330_rand(x, 5, P1);
 
 void rfc6330_tuple( rfc6330_tuple_t *tuple, rfc6330_params_t *param, unsigned int ISI)
 {
-	unsigned int J, A, B, y, v, W;
+	uint32_t J, A, B, y, v, W;
 	J = param->J;
 	W = param->W;
 	A = 53591 + (997*J);
 	A |= 0x00000001;
 	B = 10267 * (J+1);
 	y =  B + ISI * A;
-	v = rfc6330_rand(y, 0, 1 << 20);
+	v = rfc6330_rand(y, 0, ((uint32_t)0x1) << 20);
 	
 	tuple->d = rfc6330_deg(v, W);
 	tuple->a = 1 + rfc6330_rand(y, 1, W-1);

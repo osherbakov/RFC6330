@@ -7,7 +7,7 @@
 #define bytes_per_symbol  (10)
 #define source_bytes (num_symbols * bytes_per_symbol)
 
-// The LED is attached to pin 13 on Arduino, pin 6 on Teensy++ 2.0.
+// The LED is attached to pin 13 on Arduino and Teensy 3.0, pin 6 on Teensy++ 2.0.
 const uint8_t LED_PIN = 13;
 
 unsigned char Source[source_bytes];

@@ -12,7 +12,7 @@ function K_prime = rfc6330_K_prime( K )
 
 #include "rfc6330_func.h"
 
-unsigned int const K_prime_table[] = 
+uint32_t const K_prime_table[] = 
 {
 	10,12,18, 20, 26, 30, 32, 36, 42, 46, 48, 49, 55,
 	60,62, 69,75,84, 88,  91,  95, 97,101, 114,119, 125, 127,138,140, 149,153,160,
@@ -40,7 +40,7 @@ unsigned int const K_prime_table[] =
 	53650,54188,54735, 55289, 55843,56403
 };
 
-unsigned int const Coding_table[] = 
+uint32_t const Coding_table[] = 
 {
 // K' J(K') S(K') H(K') W(K') P1(K')
 10,254,7,10,17,11,
@@ -573,13 +573,3 @@ void rfc6330_parameters(unsigned int K,
 
 }
 
-unsigned int rfc6330_K_prime(
-	unsigned int K)
-{
-	unsigned int i;
-	for (i = 0; (i < sizeof(K_prime_table)) && (K_prime_table[i] < K); i++)
-	{
-	}
-
-	return K_prime_table[i];
-}

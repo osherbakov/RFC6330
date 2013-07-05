@@ -3,10 +3,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "stdio.h"
-
-unsigned int rfc6330_deg(
-	unsigned int v,
-	unsigned int W);
+#include <stdint.h>
 
 /**********************
 	%   S - number of LDPC symbols
@@ -40,10 +37,12 @@ typedef struct
 
 } rfc6330_tuple_t;
 
-unsigned int rfc6330_K_prime(unsigned int K, unsigned int *J, 
-	unsigned int *S, unsigned int *H, unsigned int *W);
-
 void rfc6330_parameters(unsigned int K, rfc6330_params_t *params);
+
+unsigned int rfc6330_deg(
+	unsigned int v,
+	unsigned int W);
+
 
 
 void rfc6330_tuple( rfc6330_tuple_t *tuple, rfc6330_params_t *param, unsigned int ISI);
@@ -113,6 +112,6 @@ void rfc6330_swap_vec(unsigned char *v1, unsigned char *v2, unsigned int Size);
 
 //--------------------------
 
-unsigned int rfc6330_rand(unsigned int x, unsigned int ii, unsigned int m);
+uint32_t rfc6330_rand(uint32_t x, unsigned int ii, uint32_t m);
 
 #endif
