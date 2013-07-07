@@ -53,7 +53,7 @@ void setup()
           ret = rfc6330_decode_block(Dest, source_bytes, Received, bytes_per_symbol, ESIs, rcvd_idx);
           if( ret == 0)
           {
-            // decoded
+            // decoded succesfully - print results
             time_end = micros();
             Serial << "Received " << rcvd_idx << " symbols:";
             for(int k = 0; k < rcvd_idx; k++)    Serial << ESIs[k] << " ";  
