@@ -272,7 +272,7 @@
 		/>
 		<Global
 			Name="arduino.upload.port"
-			Value="COM21"
+			Value="COM17"
 		/>
 		<Global
 			Name="arduino.upload.protocol"
