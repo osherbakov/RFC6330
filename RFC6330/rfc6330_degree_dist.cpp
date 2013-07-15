@@ -51,7 +51,7 @@ uint32_t const dist_table[] = {
 };
 
 unsigned int rfc6330_deg(
-	unsigned int v,
+	uint32_t v,
 	unsigned int W)
 {
 	unsigned int degree = 0;

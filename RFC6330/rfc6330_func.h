@@ -4,6 +4,7 @@
 #include "string.h"
 #include "stdio.h"
 #include <stdint.h>
+#include <avr/pgmspace.h>
 
 /**********************
 	%   S - number of LDPC symbols
@@ -39,9 +40,7 @@ typedef struct
 
 void rfc6330_parameters(unsigned int K, rfc6330_params_t *params);
 
-unsigned int rfc6330_deg(
-	unsigned int v,
-	unsigned int W);
+unsigned int rfc6330_deg(uint32_t v, unsigned int W);
 
 
 
