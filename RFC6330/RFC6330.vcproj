@@ -213,6 +213,18 @@
 				RelativePath=".\rfc6330_tuple.cpp"
 				>
 			</File>
+			<Filter
+				Name="CVSD"
+				>
+				<File
+					RelativePath="..\CVSD\CVSD.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\CVSD\CVSD.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

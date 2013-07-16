@@ -79,6 +79,13 @@ uint8_t cvsd_encode(CVSD_STATE_t *state, int sample)
 	return res;
 }
 
+void cvsd_init(CVSD_STATE_t *state)
+{		
+	state->ShiftRegister = 0;
+	state->V_integrator = 0;
+	state->V_syllabic = SYLLABIC_MIN;
+}
+
 int			test_vec[400];
 uint8_t		test_bits[100];
 int			result_vec[400];
@@ -86,7 +93,7 @@ int			result_vec[400];
 #define PI (3.1415926535897932384626433)
 #define FREQ  (800)
 
-int main()
+int cvsd_unit_test()
 {
 	uint8_t			data;
 	unsigned int	bit_count, byte_count;
@@ -97,10 +104,7 @@ int main()
 	}
 
 	CVSD_STATE_t	enc;
-	enc.ShiftRegister = 0;
-	enc.V_integrator = 0;
-	enc.V_syllabic = SYLLABIC_MIN;
-
+	cvsd_init(&enc);
 
 	// Encode samples into CVSD stream
 	byte_count = bit_count = 0;
@@ -122,9 +126,7 @@ int main()
 	}
 
 	CVSD_STATE_t	dec;
-	dec.ShiftRegister = 0;
-	dec.V_integrator = 0;
-	dec.V_syllabic = SYLLABIC_MIN;
+	cvsd_init(&dec);
 
 	for(int i = 0; i < 20; i++)
 	{
@@ -142,7 +144,7 @@ int main()
 //		test_bits[i*5 + 3] = 0xB4;
 //		test_bits[i*5 + 4] = 0x92;
 	}
-	// Decode the received CVSD stream into regular samples
+	// Decode the received CVSD stream
 	byte_count = bit_count = 0;
 	for(int i = 0; i < 400; i++)
 	{
@@ -160,5 +162,5 @@ int main()
 		}
 		result_vec[i] = cvsd_decode(&dec, data);
 	}
-
+	return 0;
 }
