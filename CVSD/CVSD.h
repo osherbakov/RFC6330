@@ -8,25 +8,32 @@
 #define SAMPLERATE_KS (SAMPLERATE / 1000)
 #define BITRATE_KB (BITRATE / 1000)
 
-// Shift register info
 #define SR_NUM_BITS			(3)
 #define SR_MASK				((1<<SR_NUM_BITS)-1)
 
-// Input/output data info 
-#define DATA_NUM_BITS		(13)
+#define DATA_NUM_BITS		(16)
+
+#define MAX_DATA			( (1L <<(DATA_NUM_BITS-1)) - 1)
+#define MIN_DATA			( -(MAX_DATA + 1) )
+
 #define DATA_NORM_SHIFT		(DATA_NUM_BITS - 1)
 #define DATA_NORM_OFFSET	( 1L << (DATA_NORM_SHIFT - 1) )
 
-#define MAX_ABS_DATA		(1L << DATA_NORM_SHIFT)
 
-#define RC_SYLLABIC_MS		(5)
+#define RC_SYLLABIC_STEP_MS	(5)
+#define RC_SYLLABIC_LEAK_MS	(5)
+#define RC_INTEGRATOR_STEP_MS	(1)
+#define RC_INTEGRATOR_LEAK_MS	(1)
+
 #define SYLLABIC_RATIO		(33)
-#define RC_INTEGRATOR_MS	(1)
 
-#define	SYLLABIC_STEP		( (MAX_ABS_DATA + (BITRATE_KB * RC_SYLLABIC_MS)/2 ) / ( BITRATE_KB * RC_SYLLABIC_MS))
-#define	SYLLABIC_MIN		( ((MAX_ABS_DATA + SYLLABIC_RATIO/2)/SYLLABIC_RATIO + (BITRATE_KB * RC_SYLLABIC_MS)/2 ) / ( BITRATE_KB * RC_SYLLABIC_MS))
 
-#define	INTEGRATOR_STEP		( (MAX_ABS_DATA + (BITRATE_KB * RC_INTEGRATOR_MS)/2 ) / ( BITRATE_KB * RC_INTEGRATOR_MS))
+#define	SYLLABIC_STEP	( (MAX_DATA + (BITRATE_KB * RC_SYLLABIC_STEP_MS)/2 ) / ( BITRATE_KB * RC_SYLLABIC_STEP_MS))
+#define	SYLLABIC_LEAK	( (MAX_DATA + (BITRATE_KB * RC_SYLLABIC_LEAK_MS)/2 ) / ( BITRATE_KB * RC_SYLLABIC_LEAK_MS))
+#define	SYLLABIC_MIN	( (MAX_DATA + SYLLABIC_RATIO/2)/SYLLABIC_RATIO )
+
+#define	INTEGRATOR_STEP		( (MAX_DATA + (BITRATE_KB * RC_INTEGRATOR_STEP_MS)/2 ) / ( BITRATE_KB * RC_INTEGRATOR_STEP_MS))
+#define	INTEGRATOR_LEAK		( (MAX_DATA + (BITRATE_KB * RC_INTEGRATOR_LEAK_MS)/2 ) / ( BITRATE_KB * RC_INTEGRATOR_LEAK_MS))
 
 typedef struct CVSD_STATE{
 	uint8_t		ShiftRegister;
@@ -41,10 +48,6 @@ typedef struct CVSD_STATE{
 #ifndef MAX
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
-
-extern int cvsd_decode(CVSD_STATE_t *state, uint8_t bits);
-extern uint8_t cvsd_encode(CVSD_STATE_t *state, int sample);
-extern void cvsd_init(CVSD_STATE_t *state);
 
 #endif	// __CVSD_H__
 
