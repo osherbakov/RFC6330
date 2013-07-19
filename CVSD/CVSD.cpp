@@ -33,12 +33,10 @@ int cvsd_decode(CVSD_STATE_t *state, uint8_t bits)
 	{
 		syllabic_diff = MULT(MAX_DATA - V_syllabic,  SYLLABIC_STEP);
 		V_syllabic += syllabic_diff;
-		V_syllabic = MIN(V_syllabic, MAX_DATA);
 	}else
 	{
 		syllabic_diff = MULT(state->V_syllabic - SYLLABIC_MIN,SYLLABIC_LEAK);
 		V_syllabic -= syllabic_diff;
-		V_syllabic = MAX(V_syllabic, SYLLABIC_MIN);
 	}
 
 	// PROCESS INTEGRATOR BLOCK
@@ -80,12 +78,10 @@ uint8_t cvsd_encode(CVSD_STATE_t *state, int sample)
 	{
 		syllabic_diff = MULT(MAX_DATA - V_syllabic, SYLLABIC_STEP);
 		V_syllabic += syllabic_diff;
-		V_syllabic = MIN(V_syllabic, MAX_DATA);
 	}else
 	{
 		syllabic_diff = MULT(state->V_syllabic - SYLLABIC_MIN, SYLLABIC_LEAK);
 		V_syllabic -= syllabic_diff;
-		V_syllabic = MAX(V_syllabic, SYLLABIC_MIN);
 	}
 
 	// PROCESS INTEGRATOR BLOCK
@@ -109,31 +105,31 @@ int			result_vec[2000];
 
 #define PI (3.1415926535897932384626433)
 #define TWO_PI (2.0 * PI)
-#define FREQ  (1111)
+#define FREQ  (800)
 
 int main()
 {
 	uint8_t			databit, databyte;
 	unsigned int	bit_count, byte_count;
 	// Generate test vector
-	for(int i = 0; i < 200; i++)
-	{
-		test_vec[i] = (int) (sin((i * FREQ * PI/4)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
-	}
-
-	for(int i = 200; i < 400; i++)
+	for(int i = 0; i < 400; i++)
 	{
 		test_vec[i] = (int) (sin((i * FREQ * TWO_PI)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
 
-	for(int i = 400; i < 600; i++)
+	for(int i = 400; i < 400; i++)
 	{
 		test_vec[i] = (int) (sin((i * FREQ * PI)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
 
-	for(int i = 600; i < 800; i++)
+	for(int i = 400; i < 600; i++)
 	{
 		test_vec[i] = (int) (sin((i * FREQ * PI/2)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
+	}
+
+	for(int i = 600; i < 800; i++)
+	{
+		test_vec[i] = (int) (sin((i * FREQ * PI/4)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
 	for(int i = 800; i < 1000; i++)
 	{

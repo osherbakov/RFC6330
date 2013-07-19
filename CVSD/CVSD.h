@@ -25,8 +25,8 @@
 #define RC_INTEGRATOR_STEP_MS	(1)
 #define RC_INTEGRATOR_LEAK_MS	(1)
 
-#define MAX_SLOPE			(21)
-#define SYLLABIC_RATIO		(33)
+#define MAX_SLOPE			(20)
+#define SYLLABIC_RATIO		(48)
 
 #define DIV(a,b)  (((a)+(b)/2)/(b))
 #define MULT(a,b) (((a)*(b)+DATA_NORM_OFFSET)>>DATA_NORM_SHIFT)
