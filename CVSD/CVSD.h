@@ -38,11 +38,23 @@
 #define	INTEGRATOR_STEP	DIV(MAX_DATA, BITRATE_KB * RC_INTEGRATOR_STEP_MS)
 #define	INTEGRATOR_LEAK	DIV(MAX_DATA, BITRATE_KB * RC_INTEGRATOR_LEAK_MS)
 
+#define N_COEFF_DEC		(22)
+#define N_STATES_DEC    (N_COEFF_DEC-1)
+
 typedef struct CVSD_STATE{
 	uint8_t		ShiftRegister;
 	uint16_t	V_syllabic;
 	int16_t		V_integrator;
+	int16_t		dec_coeff[N_COEFF_DEC];
+	int16_t		dec_states[N_STATES_DEC];
 }CVSD_STATE_t;
+
+;
+const int16_t DEC_NUM[] = {
+      730,    453,  -1079,  -1351,   1132,   2872,   -441,  -5424,  -2262,
+    12092,  26377,  26377,  12092,  -2262,  -5424,   -441,   2872,   1132,
+    -1351,  -1079,    453,    730
+};
 
 #ifndef MIN
 #define MIN(a,b) ((a) > (b) ? (b) : (a))
@@ -56,6 +68,7 @@ typedef struct CVSD_STATE{
 extern uint8_t cvsd_encode(CVSD_STATE_t *state, int sample);
 extern int cvsd_decode(CVSD_STATE_t *state, uint8_t bits);
 extern void cvsd_init(CVSD_STATE_t *state);
+extern int cvsd_postfilter(CVSD_STATE_t *state, int sample);
 
 #endif	// __CVSD_H__
 

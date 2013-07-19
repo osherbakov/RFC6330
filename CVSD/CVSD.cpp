@@ -1,13 +1,29 @@
 #include "CVSD.h"
 #include <math.h>
+#include <string.h>
 
 void cvsd_init(CVSD_STATE_t *state)
 {
 	state->ShiftRegister = 0;
 	state->V_integrator = 0;
 	state->V_syllabic = SYLLABIC_MIN;
+	memcpy(state->dec_coeff, DEC_NUM, N_COEFF_DEC * sizeof(state->dec_coeff[0]));
+	memset(state->dec_states, 0, N_STATES_DEC * sizeof(state->dec_states[0]));
 }
 
+int cvsd_postfilter(CVSD_STATE_t *state, int sample)
+{
+	int16_t *coeffs = &state->dec_coeff[0];
+	int16_t *states = &state->dec_states[0];
+	int32_t  mac = (sample * *coeffs++);
+	for(int i = 0; i < N_STATES_DEC; i++)
+	{
+		mac+= (*coeffs++ * *states++);
+	}
+	for (int i = N_STATES_DEC-1; i > 0; i--)	state->dec_states[i] = state->dec_states[i-1];
+	state->dec_states[0] = sample;
+	return mac >> 16;
+}
 
 int cvsd_decode(CVSD_STATE_t *state, uint8_t bits)
 {
