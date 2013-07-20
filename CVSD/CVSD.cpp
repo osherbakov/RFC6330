@@ -7,22 +7,39 @@ void cvsd_init(CVSD_STATE_t *state)
 	state->ShiftRegister = 0;
 	state->V_integrator = 0;
 	state->V_syllabic = SYLLABIC_MIN;
-	memcpy(state->dec_coeff, DEC_NUM, N_COEFF_DEC * sizeof(state->dec_coeff[0]));
-	memset(state->dec_states, 0, N_STATES_DEC * sizeof(state->dec_states[0]));
+	memcpy(state->filt_num, DEC_NUM, N_COEFF * sizeof(state->filt_num[0]));
+	memcpy(state->filt_den, DEC_DEN, N_COEFF * sizeof(state->filt_den[0]));
+	memset(state->filt_states, 0, (N_COEFF-1) * sizeof(state->filt_states[0]));
 }
 
-int cvsd_postfilter(CVSD_STATE_t *state, int sample)
+int cvsd_filter(CVSD_STATE_t *state, int sample)
 {
-	int16_t *coeffs = &state->dec_coeff[0];
-	int16_t *states = &state->dec_states[0];
-	int32_t  mac = (sample * *coeffs++);
-	for(int i = 0; i < N_STATES_DEC; i++)
+	int32_t  mac;
+	int16_t *coeffs = &state->filt_den[0];
+	int16_t *states = &state->filt_states[0];
+
+	// Process Denominator part
+	mac = *coeffs++ * sample;
+	for(int i = 0; i < (N_COEFF-1); i++)
+	{
+		mac-= (*coeffs++ * *states++);
+	}
+
+	sample = mac >> 15;
+
+	// Process Nominator part
+	coeffs = &state->filt_num[0];
+	states = &state->filt_states[0];
+	mac = *coeffs++ * sample;
+	for(int i = 0; i < (N_COEFF-1); i++)
 	{
 		mac+= (*coeffs++ * *states++);
 	}
-	for (int i = N_STATES_DEC-1; i > 0; i--)	state->dec_states[i] = state->dec_states[i-1];
-	state->dec_states[0] = sample;
-	return mac >> 16;
+	// shift the delay line and add new sample
+	for (int i = N_COEFF-1; i > 0; i--)	state->filt_states[i] = state->filt_states[i-1];
+	state->filt_states[0] = sample;
+
+	return mac >> 12;
 }
 
 int cvsd_decode(CVSD_STATE_t *state, uint8_t bits)
@@ -236,7 +253,7 @@ int main()
 	for(int i = 0; i < 2000; i++)
 	{
 		databit = databyte & (1 << (7 - bit_count)) ? 1 : 0;
-		result_vec[i] = cvsd_decode(&dec, databit);
+		result_vec[i] = cvsd_filter(&dec, cvsd_decode(&dec, databit) );
 		bit_count++;
 		if(bit_count >= 8)
 		{	

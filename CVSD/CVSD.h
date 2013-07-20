@@ -38,22 +38,23 @@
 #define	INTEGRATOR_STEP	DIV(MAX_DATA, BITRATE_KB * RC_INTEGRATOR_STEP_MS)
 #define	INTEGRATOR_LEAK	DIV(MAX_DATA, BITRATE_KB * RC_INTEGRATOR_LEAK_MS)
 
-#define N_COEFF_DEC		(22)
-#define N_STATES_DEC    (N_COEFF_DEC-1)
+#define N_COEFF		(5)
 
 typedef struct CVSD_STATE{
 	uint8_t		ShiftRegister;
 	uint16_t	V_syllabic;
 	int16_t		V_integrator;
-	int16_t		dec_coeff[N_COEFF_DEC];
-	int16_t		dec_states[N_STATES_DEC];
+	int16_t		filt_den[N_COEFF];
+	int16_t		filt_num[N_COEFF];
+	int16_t		filt_states[N_COEFF-1];
 }CVSD_STATE_t;
 
-;
 const int16_t DEC_NUM[] = {
-      730,    453,  -1079,  -1351,   1132,   2872,   -441,  -5424,  -2262,
-    12092,  26377,  26377,  12092,  -2262,  -5424,   -441,   2872,   1132,
-    -1351,  -1079,    453,    730
+     1128,   1547,   2340,   1547,   1128
+};
+const int DL = 3;
+const int16_t DEC_DEN[] = {
+    16384, -26015,  29996, -17102,   5370
 };
 
 #ifndef MIN
@@ -68,7 +69,7 @@ const int16_t DEC_NUM[] = {
 extern uint8_t cvsd_encode(CVSD_STATE_t *state, int sample);
 extern int cvsd_decode(CVSD_STATE_t *state, uint8_t bits);
 extern void cvsd_init(CVSD_STATE_t *state);
-extern int cvsd_postfilter(CVSD_STATE_t *state, int sample);
+extern int cvsd_filter(CVSD_STATE_t *state, int sample);
 
 #endif	// __CVSD_H__
 
