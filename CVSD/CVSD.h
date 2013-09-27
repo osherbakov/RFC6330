@@ -2,7 +2,7 @@
 #define __CVSD_H__
 #include "stdint.h"
 
-#define SAMPLERATE (16000)
+#define SAMPLERATE (8000)
 #define BITRATE (16000)
 
 #define SAMPLERATE_KS (SAMPLERATE / 1000)
@@ -25,7 +25,7 @@
 #define RC_INTEGRATOR_STEP_MS	(1)
 #define RC_INTEGRATOR_LEAK_MS	(1)
 
-#define MAX_SLOPE			(20)
+#define MAX_SLOPE			(24)
 #define SYLLABIC_RATIO		(48)
 
 #define DIV(a,b)  (((a)+(b)/2)/(b))
@@ -41,20 +41,23 @@
 #define N_COEFF		(5)
 
 typedef struct CVSD_STATE{
-	uint8_t		ShiftRegister;
+	uint16_t	ShiftRegister;
 	uint16_t	V_syllabic;
 	int16_t		V_integrator;
+	uint16_t	n_coeff;
 	int16_t		filt_den[N_COEFF];
 	int16_t		filt_num[N_COEFF];
 	int16_t		filt_states[N_COEFF-1];
 }CVSD_STATE_t;
 
-const int16_t DEC_NUM[] = {
-     1128,   1547,   2340,   1547,   1128
+const int16_t FILT_NUM[] = {
+// 851,   2221,   3002,   2221,    851
+      498,   1990,   2985,   1990,    498
 };
-const int DL = 3;
-const int16_t DEC_DEN[] = {
-    16384, -26015,  29996, -17102,   5370
+
+const int16_t FILT_DEN[] = {
+//    16384, -21824,  25281, -14327,   4758
+    16384, -22800,  25331, -14678,   4693
 };
 
 #ifndef MIN
@@ -65,11 +68,19 @@ const int16_t DEC_DEN[] = {
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
+typedef enum
+{
+	CVSD_ENC,
+	CVSD_DEC
+}CVSD_TYPE_t;
 
 extern uint8_t cvsd_encode(CVSD_STATE_t *state, int sample);
 extern int cvsd_decode(CVSD_STATE_t *state, uint8_t bits);
-extern void cvsd_init(CVSD_STATE_t *state);
+extern void cvsd_init(CVSD_STATE_t *state, CVSD_TYPE_t cvsd_type);
 extern int cvsd_filter(CVSD_STATE_t *state, int sample);
+extern void cvsd_8K_to_16K(CVSD_STATE_t *state, int *dest, int *src, int src_cnt);
+extern void cvsd_16K_to_8K(CVSD_STATE_t *state, int *dest, int *src, int src_cnt);
+
 
 #endif	// __CVSD_H__
 
