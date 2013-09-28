@@ -41,10 +41,10 @@
 #define N_COEFF		(5)
 
 typedef struct CVSD_STATE{
-	uint16_t	ShiftRegister;
-	uint16_t	V_syllabic;
-	int16_t		V_integrator;
-	uint16_t	n_coeff;
+	uint8_t		ShiftRegister;
+	uint32_t	V_syllabic;
+	int32_t		V_integrator;
+	uint32_t	n_coeff;
 	int16_t		filt_den[N_COEFF];
 	int16_t		filt_num[N_COEFF];
 	int16_t		filt_states[N_COEFF-1];
@@ -75,7 +75,7 @@ typedef enum
 }CVSD_TYPE_t;
 
 extern uint8_t cvsd_encode(CVSD_STATE_t *state, int sample);
-extern int cvsd_decode(CVSD_STATE_t *state, uint8_t bits);
+extern int cvsd_decode(CVSD_STATE_t *state, uint8_t bit);
 extern void cvsd_init(CVSD_STATE_t *state, CVSD_TYPE_t cvsd_type);
 extern int cvsd_filter(CVSD_STATE_t *state, int sample);
 extern void cvsd_8K_to_16K(CVSD_STATE_t *state, int *dest, int *src, int src_cnt);

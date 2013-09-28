@@ -76,20 +76,22 @@ int cvsd_filter(CVSD_STATE_t *state, int sample)
 	return mac >> 12;
 }
 
-int cvsd_decode(CVSD_STATE_t *state, uint8_t bits)
+int cvsd_decode(CVSD_STATE_t *state, uint8_t bit)
 {
 	int				sample_bigger_than_ref;
-	unsigned int	V_syllabic, syllabic_diff;
-	int				V_integrator, integrator_diff;
-	int				V_s;
-	unsigned int	SR;
+	uint32_t		V_syllabic, syllabic_diff;
+	int32_t			V_integrator;
+	int32_t			V_s;
+	uint8_t			SR;
+	int				result;
 
+	// Get data from the state and put them into work variables
 	V_syllabic = state->V_syllabic;
 	V_integrator = state->V_integrator;
 	SR = state->ShiftRegister;
 
 	// Extract the comparator output bit
-	sample_bigger_than_ref = bits & 0x01;
+	sample_bigger_than_ref = bit & 0x01;
 
 	// Add the bit into the shift register
 	SR = ((SR << 1) | sample_bigger_than_ref) & SR_MASK ;
@@ -102,39 +104,39 @@ int cvsd_decode(CVSD_STATE_t *state, uint8_t bits)
 		V_syllabic += syllabic_diff;
 	}else
 	{
-		syllabic_diff = MULT(state->V_syllabic - SYLLABIC_MIN,SYLLABIC_LEAK);
+		syllabic_diff = MULT(V_syllabic - SYLLABIC_MIN, SYLLABIC_LEAK);
 		V_syllabic -= syllabic_diff;
 	}
 
 	// PROCESS INTEGRATOR BLOCK
-	V_s = sample_bigger_than_ref ? (int)V_syllabic : -(int)V_syllabic;
-	integrator_diff = MULT(V_s*MAX_SLOPE - V_integrator, INTEGRATOR_STEP);
+	V_s = sample_bigger_than_ref ? (int32_t)V_syllabic : -(int32_t)V_syllabic;
+	V_integrator += MULT(V_s*MAX_SLOPE - V_integrator, INTEGRATOR_STEP);
 	// Add leakage...
-	integrator_diff -= MULT(V_integrator, INTEGRATOR_LEAK);
-	V_integrator += integrator_diff;
-	V_integrator = MIN(V_integrator, MAX_DATA);
-	V_integrator = MAX(V_integrator, MIN_DATA);
+	V_integrator -= MULT(V_integrator, INTEGRATOR_LEAK);
 
 	state->ShiftRegister = SR;
 	state->V_syllabic = V_syllabic;
 	state->V_integrator = V_integrator;
-	return (int) V_integrator;
+
+	result = MIN(V_integrator, MAX_DATA);
+	result = MAX(result, MIN_DATA);
+	return result;
 }
 
 uint8_t cvsd_encode(CVSD_STATE_t *state, int sample)
 {
-	int				sample_bigger_than_ref;
-	unsigned int	V_syllabic, syllabic_diff;
-	int				V_integrator, integrator_diff;
-	int				V_s;
-	unsigned int	SR;
+	uint8_t			sample_bigger_than_ref;
+	uint32_t		V_syllabic, syllabic_diff;
+	int32_t			V_integrator;
+	int32_t			V_s;
+	uint8_t			SR;
 
 	V_syllabic = state->V_syllabic;
 	V_integrator = state->V_integrator;
 	SR = state->ShiftRegister;
 
 	// Calculate the comparator output
-	sample_bigger_than_ref = sample > V_integrator ? 0x01 : 0x00;
+	sample_bigger_than_ref = ((int32_t)sample) > V_integrator ? 0x01 : 0x00;
 	
 	// Add the comparator bit into the shift register
 	SR = ((SR << 1) | sample_bigger_than_ref) & SR_MASK ;
@@ -147,18 +149,15 @@ uint8_t cvsd_encode(CVSD_STATE_t *state, int sample)
 		V_syllabic += syllabic_diff;
 	}else
 	{
-		syllabic_diff = MULT(state->V_syllabic - SYLLABIC_MIN, SYLLABIC_LEAK);
+		syllabic_diff = MULT(V_syllabic - SYLLABIC_MIN, SYLLABIC_LEAK);
 		V_syllabic -= syllabic_diff;
 	}
 
 	// PROCESS INTEGRATOR BLOCK
-	V_s = sample_bigger_than_ref ? (int)V_syllabic : -(int)V_syllabic;
-	integrator_diff = MULT(V_s*MAX_SLOPE - V_integrator,  INTEGRATOR_STEP);
+	V_s = sample_bigger_than_ref ? (int32_t)V_syllabic : -(int32_t)V_syllabic;
+	V_integrator +=  MULT(V_s*MAX_SLOPE - V_integrator,  INTEGRATOR_STEP);
 	// Add leakage...
-	integrator_diff -= MULT(V_integrator, INTEGRATOR_LEAK);
-	V_integrator += integrator_diff;
-	V_integrator = MIN(V_integrator, MAX_DATA);
-	V_integrator = MAX(V_integrator, MIN_DATA);
+	V_integrator -= MULT(V_integrator, INTEGRATOR_LEAK);
 
 	state->ShiftRegister = SR;
 	state->V_syllabic = V_syllabic;
@@ -190,12 +189,12 @@ int main()
 
 
 	// Generate test vector
-	for(int i = 0; i < 400; i++)
+	for(int i = 0; i < 200; i++)
 	{
 		test_vec_8K[i] = (int) (sin((i * FREQ * TWO_PI)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
 
-	for(int i = 400; i < 400; i++)
+	for(int i = 200; i < 400; i++)
 	{
 		test_vec_8K[i] = (int) (sin((i * FREQ * PI)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
@@ -237,8 +236,9 @@ int main()
 //--------------------------------------------------------
 
 /***************************
+const int insert_offset = 0;
 
-	for(int i = 25 + 0; i < 25 + 5; i++)
+	for(int i = insert_offset + 0; i < insert_offset + 5; i++)
 	{
 		// Run of 3 = 0
 		test_bits[i*5 + 0] = 0xDB;
@@ -248,7 +248,7 @@ int main()
 		test_bits[i*5 + 4] = 0x92;
 	}
 
-	for(int i = 25 + 5; i < 25 + 10; i++)
+	for(int i = insert_offset + 5; i < insert_offset + 10; i++)
 	{
 		// Run of 3 = 0.33
 		test_bits[i*5 + 0] = 0xFB;
@@ -258,7 +258,7 @@ int main()
 		test_bits[i*5 + 4] = 0x12;
 	}
 
-	for(int i = 25 + 10; i < 25 + 15; i++)
+	for(int i = insert_offset + 10; i < insert_offset + 15; i++)
 	{
 		// Run of 3 = 0.33
 		test_bits[i*5 + 0] = 0xFB;
@@ -267,7 +267,7 @@ int main()
 		test_bits[i*5 + 3] = 0xB4;
 		test_bits[i*5 + 4] = 0x12;
 	}
-	for(int i = 25 + 15; i < 25 + 20; i++)
+	for(int i = insert_offset + 15; i < insert_offset + 20; i++)
 	{
 		// Run of 3 = 0
 		test_bits[i*5 + 0] = 0xDB;
@@ -276,7 +276,7 @@ int main()
 		test_bits[i*5 + 3] = 0xB4;
 		test_bits[i*5 + 4] = 0x92;
 	}
-	for(int i = 25 + 20; i < 25 + 25; i++)
+	for(int i = insert_offset + 20; i < insert_offset + 25; i++)
 	{
 		// Run of 3 = 0
 		test_bits[i*5 + 0] = 0xdb;
