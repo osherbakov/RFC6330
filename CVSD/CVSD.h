@@ -75,13 +75,19 @@ typedef enum
 	CVSD_DEC
 }CVSD_TYPE_t;
 
+extern void cvsd_init(CVSD_STATE_t *state, CVSD_TYPE_t cvsd_type);
 extern uint8_t cvsd_encode(CVSD_STATE_t *state, int sample);
 extern int cvsd_decode(CVSD_STATE_t *state, uint8_t bit);
-extern void cvsd_init(CVSD_STATE_t *state, CVSD_TYPE_t cvsd_type);
+extern void cvsd_encode_buffer(CVSD_STATE_t *state, uint8_t *pBits, int16_t *pSamples, int nSamples);
+extern void cvsd_decode_buffer(CVSD_STATE_t *state, int16_t *pSamples, uint8_t *pBits, int nBits);
 extern int cvsd_filter(CVSD_STATE_t *state, int sample);
+
 extern void cvsd_8K_to_16K(CVSD_STATE_t *state, int *dest, int *src, int src_cnt);
 extern void cvsd_16K_to_8K(CVSD_STATE_t *state, int *dest, int *src, int src_cnt);
 
+extern void fill_8K_buffer(int *pBuffer);
+extern void fill_16K_buffer(int *pBuffer);
+extern void fill_samples_buffer(int16_t *pBuffer);
 
 #endif	// __CVSD_H__
 

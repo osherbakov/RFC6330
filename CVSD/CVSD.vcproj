@@ -184,6 +184,10 @@
 				RelativePath=".\CVSD.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\support.cpp"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
