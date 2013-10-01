@@ -79,7 +79,7 @@ int cvsd_filter(CVSD_STATE_t *state, int sample)
 int cvsd_decode(CVSD_STATE_t *state, uint8_t bit)
 {
 	int				sample_bigger_than_ref;
-	uint32_t		V_syllabic, syllabic_diff;
+	uint32_t		V_syllabic;
 	int32_t			V_integrator;
 	int32_t			V_s;
 	uint8_t			SR;
@@ -100,19 +100,17 @@ int cvsd_decode(CVSD_STATE_t *state, uint8_t bit)
 	// Apply overflow detector - all ones or all zeroes
 	if((SR == 0) || (SR == SR_MASK)) // All zeroes or ones condition detected
 	{
-		syllabic_diff = MULT(MAX_DATA - V_syllabic,  SYLLABIC_STEP);
-		V_syllabic += syllabic_diff;
+		V_syllabic += FP_MULT(MAX_DATA - V_syllabic,  SYLLABIC_STEP);
 	}else
 	{
-		syllabic_diff = MULT(V_syllabic - SYLLABIC_MIN, SYLLABIC_LEAK);
-		V_syllabic -= syllabic_diff;
+		V_syllabic -= FP_MULT(V_syllabic - SYLLABIC_MIN, SYLLABIC_LEAK);
 	}
 
 	// PROCESS INTEGRATOR BLOCK
 	V_s = sample_bigger_than_ref ? (int32_t)V_syllabic : -(int32_t)V_syllabic;
-	V_integrator += MULT(V_s*MAX_SLOPE - V_integrator, INTEGRATOR_STEP);
+	V_integrator += FP_MULT(V_s * MAX_SLOPE - V_integrator, INTEGRATOR_STEP);
 	// Add leakage...
-	V_integrator -= MULT(V_integrator, INTEGRATOR_LEAK);
+	V_integrator -= FP_MULT(V_integrator, INTEGRATOR_LEAK);
 
 	state->ShiftRegister = SR;
 	state->V_syllabic = V_syllabic;
@@ -126,7 +124,7 @@ int cvsd_decode(CVSD_STATE_t *state, uint8_t bit)
 uint8_t cvsd_encode(CVSD_STATE_t *state, int sample)
 {
 	uint8_t			sample_bigger_than_ref;
-	uint32_t		V_syllabic, syllabic_diff;
+	uint32_t		V_syllabic;
 	int32_t			V_integrator;
 	int32_t			V_s;
 	uint8_t			SR;
@@ -145,19 +143,17 @@ uint8_t cvsd_encode(CVSD_STATE_t *state, int sample)
 	// Apply overflow detector - all ones or all zeroes
 	if((SR == 0) || (SR == SR_MASK)) // All zeroes or ones condition detected
 	{
-		syllabic_diff = MULT(MAX_DATA - V_syllabic, SYLLABIC_STEP);
-		V_syllabic += syllabic_diff;
+		V_syllabic += FP_MULT(MAX_DATA - V_syllabic, SYLLABIC_STEP);
 	}else
 	{
-		syllabic_diff = MULT(V_syllabic - SYLLABIC_MIN, SYLLABIC_LEAK);
-		V_syllabic -= syllabic_diff;
+		V_syllabic -= FP_MULT(V_syllabic - SYLLABIC_MIN, SYLLABIC_LEAK);
 	}
 
 	// PROCESS INTEGRATOR BLOCK
 	V_s = sample_bigger_than_ref ? (int32_t)V_syllabic : -(int32_t)V_syllabic;
-	V_integrator +=  MULT(V_s*MAX_SLOPE - V_integrator,  INTEGRATOR_STEP);
+	V_integrator +=  FP_MULT(V_s * MAX_SLOPE - V_integrator,  INTEGRATOR_STEP);
 	// Add leakage...
-	V_integrator -= MULT(V_integrator, INTEGRATOR_LEAK);
+	V_integrator -= FP_MULT(V_integrator, INTEGRATOR_LEAK);
 
 	state->ShiftRegister = SR;
 	state->V_syllabic = V_syllabic;
@@ -180,42 +176,125 @@ int			test_vec[2000];
 uint8_t		test_bits[250];
 
 
-int main()
+void fill_8K_buffer(int *pBuffer)
 {
-
-
-	uint8_t			databit, databyte;
-	unsigned int	bit_count, byte_count;
-
-
 	// Generate test vector
 	for(int i = 0; i < 200; i++)
 	{
-		test_vec_8K[i] = (int) (sin((i * FREQ * TWO_PI)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
+		pBuffer[i] = (int) (sin((i * FREQ * TWO_PI)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
 
 	for(int i = 200; i < 400; i++)
 	{
-		test_vec_8K[i] = (int) (sin((i * FREQ * PI)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
+		pBuffer[i] = (int) (sin((i * FREQ * PI)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
 
 	for(int i = 400; i < 600; i++)
 	{
-		test_vec_8K[i] = (int) (sin((i * FREQ * PI/2)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
+		pBuffer[i] = (int) (sin((i * FREQ * PI/2)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
 
 	for(int i = 600; i < 800; i++)
 	{
-		test_vec_8K[i] = (int) (sin((i * FREQ * PI/4)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
+		pBuffer[i] = (int) (sin((i * FREQ * PI/4)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
 	for(int i = 800; i < 1000; i++)
 	{
-		test_vec_8K[i] = (int) (sin((i * FREQ * PI/8)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
+		pBuffer[i] = (int) (sin((i * FREQ * PI/8)/ (SAMPLERATE * 1.0) ) * MAX_DATA );
 	}
+}
+
+void fill_16K_buffer(int *pBuffer)
+{
+	for(int i = 0; i < 400; i++)
+	{
+		pBuffer[i] = (int) (sin((i * FREQ * TWO_PI)/ (BITRATE * 1.0) ) * MAX_DATA );
+	}
+
+	for(int i = 400; i < 800; i++)
+	{
+		pBuffer[i] = (int) (sin((i * FREQ * PI)/ (BITRATE * 1.0) ) * MAX_DATA );
+	}
+
+	for(int i = 800; i < 1200; i++)
+	{
+		pBuffer[i] = (int) (sin((i * FREQ * PI/2)/ (BITRATE * 1.0) ) * MAX_DATA );
+	}
+
+	for(int i = 1200; i < 1600; i++)
+	{
+		pBuffer[i] = (int) (sin((i * FREQ * PI/4)/ (BITRATE * 1.0) ) * MAX_DATA );
+	}
+	for(int i = 1600; i < 2000; i++)
+	{
+		pBuffer[i] = (int) (sin((i * FREQ * PI/8)/ (BITRATE * 1.0) ) * MAX_DATA );
+	}
+}
+
+void fill_data(uint8_t *pData, int insert_offset)
+{
+
+	for(int i = insert_offset + 0; i < insert_offset + 5; i++)
+	{
+		// Run of 3 = 0
+		pData[i*5 + 0] = 0xDB;
+		pData[i*5 + 1] = 0x49;
+		pData[i*5 + 2] = 0x2D;
+		pData[i*5 + 3] = 0xB4;
+		pData[i*5 + 4] = 0x92;
+	}
+
+	for(int i = insert_offset + 5; i < insert_offset + 10; i++)
+	{
+		// Run of 3 = 0.33
+		pData[i*5 + 0] = 0xFB;
+		pData[i*5 + 1] = 0x41;
+		pData[i*5 + 2] = 0x2F;
+		pData[i*5 + 3] = 0xB4;
+		pData[i*5 + 4] = 0x12;
+	}
+
+	for(int i = insert_offset + 10; i < insert_offset + 15; i++)
+	{
+		// Run of 3 = 0.33
+		pData[i*5 + 0] = 0xFB;
+		pData[i*5 + 1] = 0x41;
+		pData[i*5 + 2] = 0x2F;
+		pData[i*5 + 3] = 0xB4;
+		pData[i*5 + 4] = 0x12;
+	}
+	for(int i = insert_offset + 15; i < insert_offset + 20; i++)
+	{
+		// Run of 3 = 0
+		pData[i*5 + 0] = 0xDB;
+		pData[i*5 + 1] = 0x49;
+		pData[i*5 + 2] = 0x2D;
+		pData[i*5 + 3] = 0xB4;
+		pData[i*5 + 4] = 0x92;
+	}
+	for(int i = insert_offset + 20; i < insert_offset + 25; i++)
+	{
+		// Run of 3 = 0
+		pData[i*5 + 0] = 0xdb;
+		pData[i*5 + 1] = 0x49;
+		pData[i*5 + 2] = 0x2d;
+		pData[i*5 + 3] = 0xb4;
+		pData[i*5 + 4] = 0x92;
+	}
+}
+
+int main()
+{
+
+	uint8_t			databit, databyte;
+	unsigned int	bit_count, byte_count;
 
 	cvsd_init(&enc, CVSD_ENC);
 
+	fill_8K_buffer(test_vec_8K);
 	cvsd_8K_to_16K(&enc, test_vec, test_vec_8K, 1000);
+
+	fill_16K_buffer(test_vec);
 
 	// Encode samples into CVSD stream
 	byte_count = bit_count = 0;
@@ -234,59 +313,7 @@ int main()
 	}
 
 //--------------------------------------------------------
-
-/***************************
-const int insert_offset = 0;
-
-	for(int i = insert_offset + 0; i < insert_offset + 5; i++)
-	{
-		// Run of 3 = 0
-		test_bits[i*5 + 0] = 0xDB;
-		test_bits[i*5 + 1] = 0x49;
-		test_bits[i*5 + 2] = 0x2D;
-		test_bits[i*5 + 3] = 0xB4;
-		test_bits[i*5 + 4] = 0x92;
-	}
-
-	for(int i = insert_offset + 5; i < insert_offset + 10; i++)
-	{
-		// Run of 3 = 0.33
-		test_bits[i*5 + 0] = 0xFB;
-		test_bits[i*5 + 1] = 0x41;
-		test_bits[i*5 + 2] = 0x2F;
-		test_bits[i*5 + 3] = 0xB4;
-		test_bits[i*5 + 4] = 0x12;
-	}
-
-	for(int i = insert_offset + 10; i < insert_offset + 15; i++)
-	{
-		// Run of 3 = 0.33
-		test_bits[i*5 + 0] = 0xFB;
-		test_bits[i*5 + 1] = 0x41;
-		test_bits[i*5 + 2] = 0x2F;
-		test_bits[i*5 + 3] = 0xB4;
-		test_bits[i*5 + 4] = 0x12;
-	}
-	for(int i = insert_offset + 15; i < insert_offset + 20; i++)
-	{
-		// Run of 3 = 0
-		test_bits[i*5 + 0] = 0xDB;
-		test_bits[i*5 + 1] = 0x49;
-		test_bits[i*5 + 2] = 0x2D;
-		test_bits[i*5 + 3] = 0xB4;
-		test_bits[i*5 + 4] = 0x92;
-	}
-	for(int i = insert_offset + 20; i < insert_offset + 25; i++)
-	{
-		// Run of 3 = 0
-		test_bits[i*5 + 0] = 0xdb;
-		test_bits[i*5 + 1] = 0x49;
-		test_bits[i*5 + 2] = 0x2d;
-		test_bits[i*5 + 3] = 0xb4;
-		test_bits[i*5 + 4] = 0x92;
-	}
-
-******************************/
+	fill_data(test_bits, 0);
 //--------------------------------------------------------
 
 	cvsd_init(&dec, CVSD_DEC);

@@ -25,11 +25,12 @@
 #define RC_INTEGRATOR_STEP_MS	(1)
 #define RC_INTEGRATOR_LEAK_MS	(1)
 
-#define MAX_SLOPE			(24)
-#define SYLLABIC_RATIO		(48)
+#define MAX_SLOPE			(20)
+#define SYLLABIC_RATIO		(64)
 
-#define DIV(a,b)  (((a)+(b)/2)/(b))
-#define MULT(a,b) (((a)*(b)+DATA_NORM_OFFSET)>>DATA_NORM_SHIFT)
+#define DIV(a,b)  (uint16_t)(((a)+(b)/2)/(b))
+
+static __inline int16_t FP_MULT(int32_t a, uint16_t b) { return (int16_t) ((a * b + DATA_NORM_OFFSET) >> DATA_NORM_SHIFT);}
 
 #define	SYLLABIC_STEP	DIV(MAX_DATA, BITRATE_KB * RC_SYLLABIC_STEP_MS)
 #define	SYLLABIC_LEAK	DIV(MAX_DATA, BITRATE_KB * RC_SYLLABIC_LEAK_MS)
