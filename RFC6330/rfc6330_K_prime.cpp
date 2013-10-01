@@ -12,7 +12,7 @@ function K_prime = rfc6330_K_prime( K )
 
 #include "rfc6330_func.h"
 
-uint32_t const K_prime_table[] = 
+uint16_t const K_prime_table[] = 
 {
 	10,12,18, 20, 26, 30, 32, 36, 42, 46, 48, 49, 55,
 	60,62, 69,75,84, 88,  91,  95, 97,101, 114,119, 125, 127,138,140, 149,153,160,

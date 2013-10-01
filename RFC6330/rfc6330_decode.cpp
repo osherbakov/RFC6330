@@ -5,7 +5,8 @@ int rfc6330_decode_block(unsigned char *Result, unsigned int NumResultBytes,
 						  unsigned int *ESIs, unsigned int NumSymbols)
 {
 	rfc6330_params_t Params;
-	unsigned int K, S, H, B, P, W, L, U, K_prime, P1;
+	unsigned int K, S, H, L, K_prime;
+//	unsigned int B, P, W, U, P1;
 	unsigned int *ISIs, *AESIs;
 	unsigned char *A;
 	unsigned char *Symbols;
@@ -19,12 +20,12 @@ int rfc6330_decode_block(unsigned char *Result, unsigned int NumResultBytes,
 	K_prime = Params.K_prime;
 	S = Params.S;
 	H = Params.H;
-	B = Params.B;
-	P = Params.P;
-	W = Params.W;
+//	B = Params.B;
+//	P = Params.P;
+//	W = Params.W;
 	L = Params.L;
-	U = Params.U;
-	P1 = Params.P1;
+//	U = Params.U;
+//	P1 = Params.P1;
 	
 	// We know that the symbols from K to K_prime are zero-filled
 	ANS /* Actual Number of Symbols */ = NumSymbols + (K_prime - K);

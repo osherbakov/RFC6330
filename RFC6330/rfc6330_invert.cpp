@@ -352,16 +352,17 @@ void rfc6330_invert(unsigned char *IntermediateSymbols,
 	unsigned int NumSymbols)
 {
 	unsigned int ROWS, COLS;
-	unsigned int S, H, B, P, W, L, U, K_prime, P1;
-	K_prime = Params->K_prime;
+	unsigned int S, H, P, L;
+//	unsigned int B, W, U, K_prime, P1;
+//	K_prime = Params->K_prime;
 	S = Params->S;
 	H = Params->H;
-	B = Params->B;
+//	B = Params->B;
 	P = Params->P;
-	W = Params->W;
+//	W = Params->W;
 	L = Params->L;
-	U = Params->U;
-	P1 = Params->P1;
+//	U = Params->U;
+//	P1 = Params->P1;
 
 	ROWS = S + H + NumSymbols;
 	COLS = L;
@@ -384,9 +385,9 @@ processed = [zeros(1,S) ones(1,H) zeros(1,ROWS-S-H)];
 ***********************************************/
 	unsigned int *c, *d, *hdpc, *weights;
 	unsigned char *X, *V;
-	unsigned int ii, uu, row;
+	unsigned int ii, uu;
 	bool *processed;
-	bool process_hdpc = false;
+//	bool process_hdpc = false;
 
 	// Allocate vectors
 	c = (unsigned int *) malloc(COLS * sizeof(int));
@@ -436,7 +437,7 @@ while (ii + uu < COLS)
 		V_ROWS = ROWS - ii;
 		V_COLS = COLS - uu - ii;
 		rfc6330_copy_mat(V, V_COLS, A + ii * COLS, COLS, V_ROWS, V_COLS);
-		row = ii;
+//		row = ii;
 
 		// Calculate how many non-zero elements in each row of V
 		for(int i = 0; i < V_ROWS; i++)
