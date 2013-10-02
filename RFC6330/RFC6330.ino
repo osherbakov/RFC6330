@@ -1,5 +1,7 @@
 #include "rfc6330_func.h"
+#include "rfc6330_tasks.h"
 #include "Streaming.h"
+#include <ChibiOS_ARM.h>
 
 #define erasure (0.6)
 #define num_symbols (10)
@@ -22,6 +24,8 @@ void setup()
 
   uint32_t time_start, time_end;
 
+  task_sample_setup();
+  
   Serial.begin(115200);
   while(!Serial) {}
   
