@@ -4,31 +4,34 @@
 #include <ChibiOS_ARM.h>
 
 #define erasure (0.6)
-#define num_symbols (10)
-#define num_generated_symbols (30)
-#define bytes_per_symbol  (10)
-#define source_bytes (num_symbols * bytes_per_symbol)
 
 // The LED is attached to pin 13 on Arduino and Teensy 3.0, pin 6 on Teensy++ 2.0.
 const uint8_t LED_PIN = 13;
 
-unsigned char Source[source_bytes];
-unsigned char Encoded[num_generated_symbols * bytes_per_symbol];
+
 unsigned char Received[num_generated_symbols * bytes_per_symbol];
 unsigned char Dest[source_bytes];
-unsigned int ESIs[num_generated_symbols];
+
+
 
 void setup()
 {
-  int  ret;
-
-  uint32_t time_start, time_end;
-
-  task_sample_setup();
-  
   Serial.begin(115200);
   while(!Serial) {}
+
+  // Start ChibiOS
+  chBegin(mainThread);
+  while (1) {}
+}
+
+void mainThread()
+{
+  int  ret;
+  uint32_t time_start, time_end;
   
+  // Start handler task
+  task_sample_setup();
+  task_rf_send_setup();
 
   Serial << "*******Starting********" << endl;
   
@@ -40,8 +43,16 @@ void setup()
   while(1)
   {
 
+
     rfc6330_encode_block(Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
     time_start = micros();
+
+    // cause an interrupt - normally done by external event
+    Serial.println("High");
+    digitalWrite(OUTPUT_PIN, HIGH);
+    Serial.println("Low");
+    digitalWrite(OUTPUT_PIN, LOW);
+    Serial.println();
 
     // Simulate the erasure channel
     int rcvd_idx = 0;

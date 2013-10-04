@@ -22,9 +22,7 @@ void isrFcn() {
 
   chSysLockFromIsr();
   /* Invocation of some I-Class system APIs, never preemptable.*/
-
-  // signal handler task
-  chBSemSignalI(&isrSem);
+  chBSemSignalI(&isrSem);  // signal handler task
   chSysUnlockFromIsr();
 
   /* More IRQ handling code, again preemptable.*/
@@ -49,10 +47,16 @@ msg_t handler(void *arg) {
 }
 //------------------------------------------------------------------------------
 void task_sample_setup() {
+  // setup and check pins
+  pinMode(INPUT_PIN, INPUT);
+  pinMode(OUTPUT_PIN, OUTPUT);
+  digitalWrite(OUTPUT_PIN, HIGH);
+  
+  // attach interrupt function
+  attachInterrupt(INPUT_PIN, isrFcn, RISING);
+
   // start handler task
   chThdCreateStatic(waThd1, sizeof(waThd1), NORMALPRIO + 1, handler, NULL);
   
-  // attach interrupt function
-  attachInterrupt(2, isrFcn, RISING);
 }
 //------------------------------------------------------------------------------
