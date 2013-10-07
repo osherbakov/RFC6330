@@ -14,6 +14,9 @@
 #define source_bytes (num_symbols * bytes_per_symbol)
 #define encoded_bytes (num_symbols * bytes_per_symbol)
 
+extern unsigned char *pEnc;
+extern unsigned char *pTx;
+
 extern BinarySemaphore encSem;
 extern BinarySemaphore txSem;
 

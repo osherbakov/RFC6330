@@ -38,10 +38,19 @@ typedef struct
 
 } rfc6330_tuple_t;
 
+typedef struct
+{
+	rfc6330_params_t Params;
+	uint8_t	*A;
+	uint16_t *ISIs;
+	uint16_t *AESIs;
+	uint8_t *Symbols;
+} rfc6330_state_t;
+
+
 void rfc6330_parameters(unsigned int K, rfc6330_params_t *params);
 
 unsigned int rfc6330_deg(uint32_t v, unsigned int W);
-
 
 
 void rfc6330_tuple( rfc6330_tuple_t *tuple, rfc6330_params_t *param, unsigned int ISI);
@@ -49,21 +58,24 @@ void rfc6330_tuple( rfc6330_tuple_t *tuple, rfc6330_params_t *param, unsigned in
 void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *ISIs, unsigned int NumSymbols);
 
 int rfc6330_gf_gauss(unsigned char *Result, 
-					  rfc6330_params_t * Params, 
+					  rfc6330_params_t *Params, 
 					  unsigned char *A, 
 					  unsigned char *Symbols, unsigned int BytesPerSymbol,
 					  unsigned int NumSymbols);
 
-void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params, 
+void rfc6330_encode(rfc6330_state_t *pState,
+					unsigned  char *Result, 
 					unsigned char *IntermediateSymbols, unsigned int BytesPerSymbol, 
 					unsigned int *ESIs, unsigned int Size);
 
-void rfc6330_encode_block(unsigned char *Result, unsigned int *ESIs, 
+void rfc6330_encode_block(rfc6330_state_t *pState,
+						  unsigned char *Result, unsigned int *ESIs, 
 						  unsigned int NumSymbols,
 						  unsigned char *Source,  unsigned int BytesPerSymbol,
 						  unsigned int NumSrcBytes);
 
-int rfc6330_decode_block(unsigned char *Result, unsigned int NumResultBytes,  
+int rfc6330_decode_block(rfc6330_state_t *pState,
+						 unsigned char *Result, unsigned int NumResultBytes,  
 						  unsigned char *Source, unsigned int BytesPerSymbol, 
 						  unsigned int *ESIs, unsigned int NumSymbols);
 

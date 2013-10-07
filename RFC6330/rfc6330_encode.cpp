@@ -50,14 +50,14 @@ end
 *********************************/
 #include "rfc6330_func.h"
 
-void rfc6330_encode_block(unsigned char *Result, unsigned int *ESIs,  
+void rfc6330_encode_block(rfc
+						  unsigned char *Result, unsigned int *ESIs,  
 						  unsigned int NumSymbols,
 						  unsigned char *Source, unsigned int BytesPerSymbol, 
 						  unsigned int NumSrcBytes)
 {
 	rfc6330_params_t Params;
 	unsigned int K, S, H, L, K_prime;
-//	unsigned int B, P, W, U, P1;
 	unsigned int *ISIs;
 	unsigned char *A;
 	unsigned char *Symbols;
@@ -70,12 +70,7 @@ void rfc6330_encode_block(unsigned char *Result, unsigned int *ESIs,
 	K_prime = Params.K_prime;
 	S = Params.S;
 	H = Params.H;
-//	B = Params.B;
-//	P = Params.P;
-//	W = Params.W;
 	L = Params.L;
-//	U = Params.U;
-//	P1 = Params.P1;
 	
 	ROWS = S + H + K_prime;
 	COLS = L;
