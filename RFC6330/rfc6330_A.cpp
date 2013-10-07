@@ -1,10 +1,12 @@
 #include "rfc6330_func.h"
 
+unsigned char Gamma[289];
+unsigned char Tmp1[170];
+unsigned char Tmp2[170];
 
 void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *ISIs, unsigned int NumSymbols)
 {
 	unsigned int Rows, Cols;
-	unsigned char *Gamma;
 	unsigned int S, H, B, P, W, L, U, K_prime, P1;
 	unsigned int GammaSize;
 
@@ -114,10 +116,6 @@ A((S + 1):(S + H),1:(K_prime + S)) = ...
     rfc6330_gamma( K_prime, S ) );
 ******************************/	
 
-	Gamma = (unsigned char *) malloc(GammaSize * GammaSize);
-	unsigned char *Tmp1 =  (unsigned char *) malloc(H * GammaSize);
-	unsigned char *Tmp2 =  (unsigned char *) malloc(H * GammaSize);
-
 	rfc6330_gf_gamma(Gamma, GammaSize);
 	rfc6330_copy_mat(Tmp1, GammaSize, &Target[S * Cols + 0], Cols, H, GammaSize);
 
@@ -183,7 +181,4 @@ end
 			Target[ (ii + S + H) * Cols + tuple.b1 + W] ^= 1;
 		}
 	}
-        free(Tmp2);
-	free(Tmp1);
-	free(Gamma);
 }

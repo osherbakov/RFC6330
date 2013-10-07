@@ -50,18 +50,18 @@ end
 *********************************/
 #include "rfc6330_func.h"
 
+static unsigned int ISIs[10];
+static unsigned char A[756];
+static unsigned char Symbols[270];
+
 void rfc6330_encode_block(unsigned char *Result, unsigned int *ESIs,  
 						  unsigned int NumSymbols,
 						  unsigned char *Source, unsigned int BytesPerSymbol, 
 						  unsigned int NumSrcBytes)
 {
 	rfc6330_params_t Params;
-	unsigned int K, S, H, L, K_prime;
-//	unsigned int B, P, W, U, P1;
-	unsigned int *ISIs;
-	unsigned char *A;
-	unsigned char *Symbols;
-	unsigned int ROWS, COLS;
+	unsigned int K, S, H, K_prime;
+	unsigned int ROWS;
 
 	K = (NumSrcBytes + (BytesPerSymbol >> 1))/BytesPerSymbol;
 	if (K == 0) return;
@@ -70,26 +70,16 @@ void rfc6330_encode_block(unsigned char *Result, unsigned int *ESIs,
 	K_prime = Params.K_prime;
 	S = Params.S;
 	H = Params.H;
-//	B = Params.B;
-//	P = Params.P;
-//	W = Params.W;
-	L = Params.L;
-//	U = Params.U;
-//	P1 = Params.P1;
 	
 	ROWS = S + H + K_prime;
-	COLS = L;
 	// Zero pad the sourse symbols at the end to create an Extended block
 	// Additionally, allocate S + H (or L - K_Prime) zero symbols at the beginning
-	Symbols = (unsigned char *) malloc(ROWS * BytesPerSymbol);
 	memset(Symbols, 0, ROWS  * BytesPerSymbol);
 	memcpy(Symbols + (S + H) * BytesPerSymbol, Source, NumSrcBytes);
 	// Create ISI array
-	ISIs = (unsigned int *) malloc(K_prime * sizeof(unsigned int));
 	for (unsigned int i=0; i < K_prime; i++) ISIs[i] = i;
 
 	// Calculate the A matrix for intermediate symbols calculations
-	A = (unsigned char *) malloc( ROWS * COLS);
 	rfc6330_A(A, &Params, ISIs, K_prime);
 
 	// Now calculate all intermediate symbols
@@ -99,9 +89,6 @@ void rfc6330_encode_block(unsigned char *Result, unsigned int *ESIs,
 	// Skip generation of the zero-padding symbols at the end
 	for (unsigned int i=0; i < NumSymbols; i++) ESIs[i] = i < K ? i : (K_prime - K) + i;
 	rfc6330_encode(Result, &Params, Symbols, BytesPerSymbol, ESIs, NumSymbols);
-	free(A);
-	free(ISIs);
-	free(Symbols);
 }
 
 void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params, 

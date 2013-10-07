@@ -1,7 +1,7 @@
 #include "rfc6330_func.h"
 #include "Streaming.h"
 
-#define erasure (0.6)
+#define erasure (0.0)
 #define num_symbols (10)
 #define num_generated_symbols (30)
 #define bytes_per_symbol  (10)
