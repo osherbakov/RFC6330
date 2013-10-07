@@ -1,10 +1,6 @@
 #include "rfc6330_func.h"
 #include "rfc6330_tasks.h"
 
-unsigned char Source[source_bytes];
-unsigned char Encoded[encoded_bytes];
-unsigned int ESIs[num_generated_symbols];
-
 // initialize semaphore as taken
 BSEMAPHORE_DECL(txSem, 1);
 BSEMAPHORE_DECL(encSem, 1);

@@ -55,7 +55,7 @@ unsigned int rfc6330_deg(uint32_t v, unsigned int W);
 
 void rfc6330_tuple( rfc6330_tuple_t *tuple, rfc6330_params_t *param, unsigned int ISI);
 
-void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *ISIs, unsigned int NumSymbols);
+void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, uint16_t *ISIs, unsigned int NumSymbols);
 
 int rfc6330_gf_gauss(unsigned char *Result, 
 					  rfc6330_params_t *Params, 
@@ -69,7 +69,7 @@ void rfc6330_encode(rfc6330_state_t *pState,
 					unsigned int *ESIs, unsigned int Size);
 
 void rfc6330_encode_block(rfc6330_state_t *pState,
-						  unsigned char *Result, unsigned int *ESIs, 
+						  unsigned char *Result, uint16_t *ESIs, 
 						  unsigned int NumSymbols,
 						  unsigned char *Source,  unsigned int BytesPerSymbol,
 						  unsigned int NumSrcBytes);
@@ -77,7 +77,7 @@ void rfc6330_encode_block(rfc6330_state_t *pState,
 int rfc6330_decode_block(rfc6330_state_t *pState,
 						 unsigned char *Result, unsigned int NumResultBytes,  
 						  unsigned char *Source, unsigned int BytesPerSymbol, 
-						  unsigned int *ESIs, unsigned int NumSymbols);
+						  uint16_t *ESIs, unsigned int NumSymbols);
 
 //  Operations on the GF(256) Field 
 unsigned char rfc6330_gf_power(unsigned int ii);

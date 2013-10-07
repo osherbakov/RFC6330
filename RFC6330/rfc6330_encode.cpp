@@ -50,53 +50,46 @@ end
 *********************************/
 #include "rfc6330_func.h"
 
-void rfc6330_encode_block(rfc
+void rfc6330_encode_block(rfc6330_state_t *pState,
 						  unsigned char *Result, unsigned int *ESIs,  
 						  unsigned int NumSymbols,
 						  unsigned char *Source, unsigned int BytesPerSymbol, 
 						  unsigned int NumSrcBytes)
 {
-	rfc6330_params_t Params;
 	unsigned int K, S, H, L, K_prime;
-	unsigned int *ISIs;
-	unsigned char *A;
-	unsigned char *Symbols;
 	unsigned int ROWS, COLS;
 
 	K = (NumSrcBytes + (BytesPerSymbol >> 1))/BytesPerSymbol;
 	if (K == 0) return;
 
-	rfc6330_parameters(K, &Params);
-	K_prime = Params.K_prime;
-	S = Params.S;
-	H = Params.H;
-	L = Params.L;
+	rfc6330_parameters(K, &pState->Params);
+	K_prime = pState->Params.K_prime;
+	S = pState->Params.S;
+	H = pState->Params.H;
+	L = pState->Params.L;
 	
 	ROWS = S + H + K_prime;
 	COLS = L;
 	// Zero pad the sourse symbols at the end to create an Extended block
 	// Additionally, allocate S + H (or L - K_Prime) zero symbols at the beginning
-	Symbols = (unsigned char *) malloc(ROWS * BytesPerSymbol);
-	memset(Symbols, 0, ROWS  * BytesPerSymbol);
-	memcpy(Symbols + (S + H) * BytesPerSymbol, Source, NumSrcBytes);
+	// Symbols = (unsigned char *) malloc(ROWS * BytesPerSymbol);
+	memset(pState->Symbols, 0, ROWS  * BytesPerSymbol);
+	memcpy(pState->Symbols + (S + H) * BytesPerSymbol, Source, NumSrcBytes);
 	// Create ISI array
-	ISIs = (unsigned int *) malloc(K_prime * sizeof(unsigned int));
-	for (unsigned int i=0; i < K_prime; i++) ISIs[i] = i;
+	// ISIs = (unsigned int *) malloc(K_prime * sizeof(unsigned int));
+	for (unsigned int i = 0; i < K_prime; i++) pState->ISIs[i] = i;
 
 	// Calculate the A matrix for intermediate symbols calculations
-	A = (unsigned char *) malloc( ROWS * COLS);
-	rfc6330_A(A, &Params, ISIs, K_prime);
+	// A = (unsigned char *) malloc( ROWS * COLS);
+	rfc6330_A(pState->A, &pState->Params, pState->ISIs, K_prime);
 
 	// Now calculate all intermediate symbols
-	rfc6330_gf_gauss(0, &Params, A, Symbols, BytesPerSymbol, ROWS);
+	rfc6330_gf_gauss(0, &pState->Params, pState->A, pState->Symbols, BytesPerSymbol, ROWS);
 
 	// Generate all the required symbols (systemic + repair).
 	// Skip generation of the zero-padding symbols at the end
-	for (unsigned int i=0; i < NumSymbols; i++) ESIs[i] = i < K ? i : (K_prime - K) + i;
-	rfc6330_encode(Result, &Params, Symbols, BytesPerSymbol, ESIs, NumSymbols);
-	free(A);
-	free(ISIs);
-	free(Symbols);
+	for (unsigned int i=0; i < NumSymbols; i++) pState->AESIs[i] = i < K ? i : (K_prime - K) + i;
+	rfc6330_encode(Result, &pState->Params, pState->Symbols, BytesPerSymbol, pState->AESIs, NumSymbols);
 }
 
 void rfc6330_encode(unsigned  char *Result, rfc6330_params_t *Params, 

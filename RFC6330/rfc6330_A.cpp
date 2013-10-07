@@ -1,7 +1,7 @@
 #include "rfc6330_func.h"
 
 
-void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *ISIs, unsigned int NumSymbols)
+void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, uint16_t *ISIs, unsigned int NumSymbols)
 {
 	unsigned int Rows, Cols;
 	unsigned char *Gamma;
@@ -20,9 +20,8 @@ void rfc6330_A(unsigned char *Target, rfc6330_params_t *Params, unsigned int *IS
 
 	Rows = S + H + NumSymbols;
 	Cols = L;
-        GammaSize = K_prime + S;
-        
-        
+    GammaSize = K_prime + S;
+       
 	rfc6330_zero(Target, Cols, Rows, Cols);
 	/******************
 % LDPC Symbols
@@ -183,7 +182,7 @@ end
 			Target[ (ii + S + H) * Cols + tuple.b1 + W] ^= 1;
 		}
 	}
-        free(Tmp2);
+    free(Tmp2);
 	free(Tmp1);
 	free(Gamma);
 }

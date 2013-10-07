@@ -8,10 +8,11 @@
 // The LED is attached to pin 13 on Arduino and Teensy 3.0, pin 6 on Teensy++ 2.0.
 const uint8_t LED_PIN = 13;
 
-
+unsigned char Source[source_bytes];
+unsigned char Encoded[encoded_bytes];
+uint16_t ESIs[num_generated_symbols];
 unsigned char Received[num_generated_symbols * bytes_per_symbol];
 unsigned char Dest[source_bytes];
-
 
 
 void setup()
@@ -23,6 +24,9 @@ void setup()
   chBegin(mainThread);
   while (1) {}
 }
+
+rfc6330_state_t enc_state;
+rfc6330_state_t dec_state;
 
 void mainThread()
 {
@@ -43,8 +47,7 @@ void mainThread()
   while(1)
   {
 
-
-    rfc6330_encode_block(Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
+    rfc6330_encode_block(&enc_state, Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
     time_start = micros();
 
     // cause an interrupt - normally done by external event
@@ -65,7 +68,7 @@ void mainThread()
        
         if(rcvd_idx >= num_symbols)
         {
-          ret = rfc6330_decode_block(Dest, source_bytes, Received, bytes_per_symbol, ESIs, rcvd_idx);
+          ret = rfc6330_decode_block(&dec_state, Dest, source_bytes, Received, bytes_per_symbol, ESIs, rcvd_idx);
           if( ret == 0)
           {
             // decoded succesfully - print results

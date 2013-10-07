@@ -22,7 +22,6 @@ extern BinarySemaphore txSem;
 
 extern unsigned char Source[source_bytes];
 extern unsigned char Encoded[encoded_bytes];
-extern unsigned int ESIs[num_generated_symbols];
 extern void task_rf_send_setup();
 //------------------------------------------------------------------------------------
 
