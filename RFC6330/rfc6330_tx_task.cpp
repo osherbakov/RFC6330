@@ -1,7 +1,6 @@
 #include "rfc6330_tasks.h"
 #include <SPI.h>
-#include "nRF24L01.h"
-#include "RF24.h"
+#include <RF24.h>
 
 //
 // Hardware configuration
@@ -29,10 +28,6 @@ msg_t tx_task(void *arg) {
 	{
 		bool tx_ok, tx_fail, rx_rdy;
 		radio.whatHappened(tx_ok, tx_fail, rx_rdy);
-//		if(tx_ok)
-//		{
-//			Serial.print(".");
-//		}
 		radio.setChannel(currChannel);
 		currChannel++; currChannel &= 0x7F;
 
@@ -55,6 +50,7 @@ void tx_task_setup() {
   currPacket = 0;
 
   {
+	  radio.powerUp();
 	  radio.begin();
 	  radio.stopListening();
 	  radio.setAutoAck(false);
