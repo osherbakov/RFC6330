@@ -1,7 +1,13 @@
 #include "rfc6330_func.h"
 #include "Streaming.h"
+#include <ChibiOS_ARM.h>
+#include <SPI.h>
+#include "RF24.h"
 
-#define erasure (0.0)
+
+#include "rfc6330_tasks.h"
+
+#define erasure (0.5)
 #define num_symbols (10)
 #define num_generated_symbols (30)
 #define bytes_per_symbol  (10)
@@ -18,15 +24,23 @@ unsigned int ESIs[num_generated_symbols];
 
 void setup()
 {
+  Serial.begin(115200);
+  while(!Serial) {}
+
+  // Start ChibiOS
+  chBegin(mainThread);
+  while (1) {}
+}
+
+void mainThread()
+{
   int  ret;
 
   uint32_t time_start, time_end;
 
-  Serial.begin(115200);
-  while(!Serial) {}
-  
-
   Serial << "*******Starting********" << endl;
+  sample_task_setup();
+  tx_task_setup();
   
 //  Serial << "p_heap = 0x" << _HEX((int) p_heap) <<  endl;
 
@@ -35,6 +49,14 @@ void setup()
 
   while(1)
   {
+	// cause an interrupt - normally done by external event
+    Serial.println("High");
+    digitalWrite(OUTPUT_PIN, HIGH);
+    Serial.println("Low");
+    digitalWrite(OUTPUT_PIN, LOW);
+    Serial.println();
+
+	chThdSleepMilliseconds(300);
 
     rfc6330_encode_block(Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
     time_start = micros();
@@ -75,7 +97,6 @@ void setup()
 
 void loop()
 {
-
 
 }
 
