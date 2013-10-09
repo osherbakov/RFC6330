@@ -40,7 +40,7 @@ uint16_t const K_prime_table[] =
 	53650,54188,54735, 55289, 55843,56403
 };
 
-uint16_t const Coding_table[] PROGMEM = 
+uint16_t const Coding_table[] = 
 {
 // K' J(K') S(K') H(K') W(K') P1(K')
 10,254,7,10,17,11,
@@ -558,12 +558,12 @@ void rfc6330_parameters(unsigned int K, rfc6330_params_t *params)
 	for (i = 0; (i < sizeof(K_prime_table)) && (K_prime_table[i] < K); i++)
 	{
 	}
-	params->K_prime =  pgm_read_word_near(&Coding_table[i * 6 + 0]);
-	params->J =  pgm_read_word_near(&Coding_table[i * 6 + 1]);
-	params->S =  pgm_read_word_near(&Coding_table[i * 6 + 2]);
-	params->H =  pgm_read_word_near(&Coding_table[i * 6 + 3]);
-	params->W =  pgm_read_word_near(&Coding_table[i * 6 + 4]);
-	params->P1 =  pgm_read_word_near(&Coding_table[i * 6 + 5]);
+	params->K_prime =  Coding_table[i * 6 + 0];
+	params->J =  Coding_table[i * 6 + 1];
+	params->S =  Coding_table[i * 6 + 2];
+	params->H =  Coding_table[i * 6 + 3];
+	params->W =  Coding_table[i * 6 + 4];
+	params->P1 = Coding_table[i * 6 + 5];
 
 	params->L =  params->K_prime + params->S + params->H;
 	params->P = params->L - params->W;

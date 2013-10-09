@@ -4,7 +4,6 @@
 #include "string.h"
 #include "stdio.h"
 #include <stdint.h>
-#include <avr/pgmspace.h>
 
 /**********************
 	%   S - number of LDPC symbols

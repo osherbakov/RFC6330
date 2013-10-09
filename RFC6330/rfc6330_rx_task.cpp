@@ -1,7 +1,5 @@
 #include "rfc6330_tasks.h"
-#include <SPI.h>
-#include <RF24.h>
-#include <nRF24L01.h>
+
 
 //
 // Hardware configuration
@@ -13,9 +11,7 @@ static int	currPacket = 0;
 static int	currChannel = 0;
 
 static uint8_t rx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
-static uint8_t rx_data[10];
-
-extern RF24 radio;
+static uint8_t rx_data[packet_size];
 
 
 msg_t rx_task(void *arg) {
@@ -56,11 +52,11 @@ void rx_task_setup() {
 	  radio.setCRCLength(RF24_CRC_16);
 	  radio.setDataRate(RF24_1MBPS);
 	  radio.setRetries(0,0);
-	  radio.setPayloadSize(10);
+	  radio.setPayloadSize(packet_size);
 	  radio.write_register(SETUP_AW, 0x01);	// 3 bytes address
 	  radio.write_register(TX_ADDR, rx_addr, 3);
 	  radio.write_register(RX_ADDR_P0, rx_addr, 3);
-	  radio.write_register(RX_PW_P0, 10);	// RX Payload 10 bytes
+	  radio.write_register(RX_PW_P0, packet_size);	// RX Payload 10 bytes
 	  radio.write_register(DYNPD,0);
 	  radio.write_register(FEATURE, 0);
 	  radio.powerDown();
