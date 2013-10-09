@@ -5,8 +5,6 @@
 #include <ChibiOS_ARM.h>
 #include <stdint.h>
 
-//------------------------------------------------------------------------------------
-// Parameters for TX symbols
 #define num_symbols (10)			// We will send 100 bytes every 50 ms
 #define bytes_per_symbol  (10)		//    split into 10 packets of 10 bytes each
 #define num_generated_symbols (30)	// In total we will send 30 packets max,
@@ -14,10 +12,19 @@
 #define source_bytes	(num_symbols * bytes_per_symbol)
 #define encoded_bytes	(num_symbols * bytes_per_symbol)
 
+//------------------------------------------------------------------------------------
+// Parameters for TX task
 extern unsigned char *pEnc;
 extern unsigned char *pTx;
-
 extern void tx_task_setup();
+//------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------
+// Parameters for RX task
+extern unsigned char *pDec;
+extern unsigned char *pRx;
+
+extern void rx_task_setup();
 //------------------------------------------------------------------------------------
 
 

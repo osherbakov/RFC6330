@@ -7,31 +7,29 @@
 // Hardware configuration
 //
 
-// Set up nRF24L01 radio on SPI bus plus pins 9 & 10
 
-RF24 radio(9,10);
-
-static WORKING_AREA(waTx, 200);
+static WORKING_AREA(waRx, 200);
 static int	currPacket = 0;
 static int	currChannel = 0;
 
-static uint8_t tx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
-static uint8_t test_data[] = {1,2,3,4,5,6,7,8,9,10};
+static uint8_t rx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
+static uint8_t rx_data[10];
 
-msg_t tx_task(void *arg) {
+extern RF24 radio;
+
+
+msg_t rx_task(void *arg) {
  systime_t t =  chTimeNow();
   while (1) {
     t += MS2ST(1);
 	chThdSleepUntil(t);
-
 	{
 		bool tx_ok, tx_fail, rx_rdy;
 		radio.whatHappened(tx_ok, tx_fail, rx_rdy);
 		radio.setChannel(currChannel);
 		currChannel++; currChannel &= 0x7F;
 
-		radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
-		radio.write_payload(test_data, 10);
+		radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) | _BV(PRIM_RX) );
 		radio.ce(HIGH);
 		delayMicroseconds(15);
 		radio.ce(LOW);
@@ -41,9 +39,9 @@ msg_t tx_task(void *arg) {
 }
 //------------------------------------------------------------------------------
 
-void tx_task_setup() {
+void rx_task_setup() {
   // start handler task
-  chThdCreateStatic(waTx, sizeof(waTx), HIGHPRIO, tx_task, NULL);
+  chThdCreateStatic(waRx, sizeof(waRx), HIGHPRIO, rx_task, NULL);
 
   currChannel = 0;
   currPacket = 0;
@@ -60,9 +58,9 @@ void tx_task_setup() {
 	  radio.setRetries(0,0);
 	  radio.setPayloadSize(10);
 	  radio.write_register(SETUP_AW, 0x01);	// 3 bytes address
-	  radio.write_register(TX_ADDR, tx_addr, 3);
-	  radio.write_register(RX_ADDR_P0, tx_addr, 3);
-	  radio.write_register(RX_PW_P0, 10);
+	  radio.write_register(TX_ADDR, rx_addr, 3);
+	  radio.write_register(RX_ADDR_P0, rx_addr, 3);
+	  radio.write_register(RX_PW_P0, 10);	// RX Payload 10 bytes
 	  radio.write_register(DYNPD,0);
 	  radio.write_register(FEATURE, 0);
 	  radio.powerDown();

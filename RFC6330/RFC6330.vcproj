@@ -210,6 +210,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\rfc6330_rx_task.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\rfc6330_task_sample.cpp"
 				>
 			</File>
