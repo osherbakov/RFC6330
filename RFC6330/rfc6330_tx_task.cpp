@@ -45,7 +45,6 @@ msg_t tx_task(void *arg) {
 		if (isActive)
 		{
 			radio.ce(LOW);
-			radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 			radio.setChannel(currChannel);
 
 			// First send the systemic symbols on every timeslot
@@ -98,6 +97,7 @@ void tx_task_setup() {
 		radio.powerUp();
 		radio.begin();
 		radio.stopListening();
+		radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 		radio.setAutoAck(false);
 		radio.setChannel(currChannel);
 		radio.setPALevel(RF24_PA_HIGH);

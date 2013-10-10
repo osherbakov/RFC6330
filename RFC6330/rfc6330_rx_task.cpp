@@ -26,7 +26,6 @@ msg_t rx_task(void *arg) {
 			bool tx_ok, tx_fail, rx_rdy;
 
 			radio.ce(LOW);
-			radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 			radio.setChannel(currChannel);
 			radio.whatHappened(tx_ok, tx_fail, rx_rdy);
 			if(rx_rdy)
@@ -86,6 +85,7 @@ void rx_task_setup() {
 		radio.powerUp();
 		radio.begin();
 		radio.stopListening();
+		radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 		radio.setAutoAck(false);
 		radio.setChannel(currChannel);
 		radio.setPALevel(RF24_PA_HIGH);
