@@ -5,12 +5,14 @@ static bool	isActive = false;
 static int	currSlot = 0;
 static int	currChannel = 0;
 static int  currSymbol = 0;
-static int	*ESI;
-static int	*currESI;
+static unsigned int *ESI;
+static unsigned int *currESI;
 static uint8_t *currData;
 
 static uint8_t tx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
 static uint8_t rx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
+//static uint8_t rx_addr[] = {0x06, 0x50, 0xED};	// Barker 13 and Barker 11
+
 
 msg_t rx_task(void *arg) {
 	int			i;
@@ -24,36 +26,51 @@ msg_t rx_task(void *arg) {
 		if (isActive)
 		{
 			bool tx_ok, tx_fail, rx_rdy;
+			uint8_t ISI;
 
 			radio.ce(LOW);
 			radio.setChannel(currChannel);
 			radio.whatHappened(tx_ok, tx_fail, rx_rdy);
 			if(rx_rdy)
 			{
+				Serial.print("Rx:"); 
+
 				// Get ISI as the first byte of the packet
 				radio.csn(LOW);
 				SPI.transfer(R_RX_PAYLOAD);
-				*currESI++ = SPI.transfer(0xFF);
+				ISI = SPI.transfer(0xFF);
+				*currESI++ = ISI;
+				Serial.println(ISI);
 				// Get the rest of data
 				for(i = 0; i < bytes_per_symbol; i++ ){
 					*currData++ = SPI.transfer(0xFF);
 				}
 				radio.csn(HIGH);
 				currSymbol++;
+				
+				// Calculate the timeslot
+				if(ISI < num_symbols)
+					currSlot = ISI;
+				else
+					currSlot = num_symbols + 2 * ISI;
 			}
 
 			if( currSymbol < num_symbols)
 			{
-				// Set Rx mode
+				// Set Rx mode/
+				Serial.println("Rx:L");
 				radio.write_register(CONFIG, radio.read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX) );
+				radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 				radio.flush_rx();
 				// Activate radio
 				radio.ce(HIGH);
 			}else if(currSlot >= num_timeslots)
 			{
+				Serial.println("Rx:U");
 				isActive = false;
-			}else // We already received all symbols we need - send ACK
+			}else if(rx_rdy )// We already received all the symbols we need - send ACK
 			{
+				Serial.println("Rx:A");
 				radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
 				radio.flush_tx();
 				//------------------------ Send the Payload ------------
@@ -70,42 +87,20 @@ msg_t rx_task(void *arg) {
 			currSlot++;
 		}
 		// Keep the channel running (hopping)
-		currChannel++; currChannel &= 0x7F;
+//		currChannel++; currChannel &= 0x7F;
 	}
 }
 //------------------------------------------------------------------------------
 
 void rx_task_setup() {
-	// start handler task
 	chThdCreateStatic(waRx, sizeof(waRx), HIGHPRIO, rx_task, NULL);
 	currChannel = 0;
 	currSlot = 0;
 	isActive = false;
-	{
-		radio.powerUp();
-		radio.begin();
-		radio.stopListening();
-		radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
-		radio.setAutoAck(false);
-		radio.setChannel(currChannel);
-		radio.setPALevel(RF24_PA_HIGH);
-		radio.setCRCLength(RF24_CRC_16);
-		radio.setDataRate(RF24_1MBPS);
-		radio.setRetries(0,0);
-		radio.setPayloadSize(packet_size);
-		radio.write_register(SETUP_AW, 0x01);	// 3 bytes address
-		radio.write_register(TX_ADDR, tx_addr, 3);
-		radio.write_register(RX_ADDR_P0, rx_addr, 3);
-		radio.write_register(RX_PW_P0, packet_size);
-		radio.write_register(EN_RXADDR, ERX_P0);
-		radio.write_register(DYNPD,0);
-		radio.write_register(FEATURE, 0);
-		radio.powerDown();
-		radio.powerUp();
-	}
+	radio_setup(tx_addr, rx_addr);
 }
 
-void rx_task_start(int Channel, uint8_t *pData, int *pESI)
+void rx_task_start(int Channel, uint8_t *pData, unsigned int *pESI)
 {
 	currChannel = Channel;
 	currSymbol = 0;

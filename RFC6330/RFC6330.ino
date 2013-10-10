@@ -5,6 +5,9 @@
 #include <RF24.h>
 
 
+// Set up nRF24L01 radio on SPI bus plus pins 9 & 10
+RF24 radio(9,10);
+
 #include "rfc6330_tasks.h"
 
 #define erasure (0.5)
@@ -27,9 +30,33 @@ void setup()
   Serial.begin(115200);
   while(!Serial) {}
 
+  Serial.println("*******Setup()********");
+
   // Start ChibiOS
   chBegin(mainThread);
   while (1) {}
+}
+
+void radio_setup(uint8_t *tx_addr, uint8_t *rx_addr)
+{
+	radio.begin();
+	radio.powerUp();
+	radio.stopListening();
+	radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
+	radio.setAutoAck(false);
+	radio.setPALevel(RF24_PA_HIGH);
+	radio.setCRCLength(RF24_CRC_16);
+	radio.setDataRate(RF24_1MBPS);
+	radio.setRetries(0,0);
+	radio.setPayloadSize(packet_size);
+	radio.write_register(SETUP_AW, 0x01);	// 3 bytes address
+	radio.write_register(TX_ADDR, tx_addr, 3);
+	radio.write_register(RX_ADDR_P0, rx_addr, 3);
+	radio.write_register(RX_PW_P0, packet_size);
+	radio.write_register(EN_RXADDR, ERX_P0);
+	radio.write_register(DYNPD,0);
+	radio.write_register(FEATURE, 0);
+	radio.powerDown();
 }
 
 void mainThread()
@@ -38,28 +65,30 @@ void mainThread()
 
   uint32_t time_start, time_end;
 
-  Serial << "*******Starting********" << endl;
-  sample_task_setup();
-  tx_task_setup();
+  Serial.println("*******Starting********");
+//  sample_task_setup();
+//  tx_task_setup();
+  rx_task_setup();
   
-//  Serial << "p_heap = 0x" << _HEX((int) p_heap) <<  endl;
-
   // Populate the Source with data from 1 to 100
   for(int i = 0; i < source_bytes; i++) Source[i] = i + 1;
 
   while(1)
   {
 	// cause an interrupt - normally done by external event
-    Serial.println("High");
-    digitalWrite(OUTPUT_PIN, HIGH);
-    Serial.println("Low");
-    digitalWrite(OUTPUT_PIN, LOW);
-    Serial.println();
+//    Serial.println("High");
+//    digitalWrite(OUTPUT_PIN, HIGH);
+//    Serial.println("Low");
+//    digitalWrite(OUTPUT_PIN, LOW);
+//    Serial.println();
 
-	chThdSleepMilliseconds(300);
+	chThdSleepMilliseconds(1000);
 
     rfc6330_encode_block(Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
-    time_start = micros();
+//	tx_task_start(22, Encoded, ESIs);
+	rx_task_start(22, Received, ESIs);
+
+	time_start = micros();
 
     // Simulate the erasure channel
     int rcvd_idx = 0;
@@ -80,7 +109,7 @@ void mainThread()
             Serial << "Received " << rcvd_idx << " symbols:";
             for(int k = 0; k < rcvd_idx; k++)    Serial << ESIs[k] << " ";  
             Serial << "Time Elapsed = " << (time_end - time_start) << " us" << endl;
-            Serial << "Compare Src and DST = " << memcmp(Source, Dest, source_bytes) << endl;
+//            Serial << "Compare Src and DST = " << memcmp(Source, Dest, source_bytes) << endl;
             break;
           }else
           {

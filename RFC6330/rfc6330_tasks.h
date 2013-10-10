@@ -18,11 +18,12 @@
 #define packet_size		(bytes_per_symbol + 1)	// Send ISI + data
 
 extern RF24 radio;
+extern void radio_setup(uint8_t *tx_addr, uint8_t *rx_addr);
 
 //------------------------------------------------------------------------------------
 // Parameters for TX task
 extern void tx_task_setup();
-extern void tx_task_start(int Channel, uint8_t *pData, int *pESI);
+extern void tx_task_start(int Channel, uint8_t *pData, unsigned int *pESI);
 extern void tx_task_stop();
 //------------------------------------------------------------------------------------
 
@@ -30,7 +31,7 @@ extern void tx_task_stop();
 // Parameters for RX task
 
 extern void rx_task_setup();
-extern void rx_task_start(int Channel, uint8_t *pData, int *pESI);
+extern void rx_task_start(int Channel, uint8_t *pData, unsigned int *pESI);
 extern void rx_task_stop();
 //------------------------------------------------------------------------------------
 
