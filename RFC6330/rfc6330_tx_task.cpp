@@ -14,9 +14,28 @@ static uint8_t *currData;
 static uint8_t tx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
 static uint8_t rx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
 
+static void tx_payload()
+{
+	int			i;
+	// Set Tx mode
+	radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
+	radio.flush_tx();
+	//------------------------ Send the Payload ------------
+	// Send ISI as the first byte of the packet
+	radio.csn(LOW);
+	SPI.transfer(W_TX_PAYLOAD);
+	SPI.transfer(*currESI++);
+	// Send the rest of data
+	for(i = 0; i < bytes_per_symbol; i++ ){
+		SPI.transfer(*currData++);
+	}
+	radio.csn(HIGH);
+	//----------------- Activate radio --------------
+	radio.ce(HIGH);
+}
+
 msg_t tx_task(void *arg) {
 	uint8_t		status;
-	int			i;
 	systime_t	t =  chTimeNow();
 	while (1) 
 	{
@@ -25,39 +44,25 @@ msg_t tx_task(void *arg) {
 
 		if (isActive)
 		{
+			radio.ce(LOW);
+			radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
+			radio.setChannel(currChannel);
+
 			// First send the systemic symbols on every timeslot
 			// after that listen for the ack and then send repair symbol 
 			if( currSlot < num_symbols)
 			{
-				// Set Tx mode
-				radio.ce(LOW);
-				radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
-				radio.setChannel(currChannel);
-				radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
-				//------------------------ Send the Payload ------------
-				// Send ISI as the first byte of the packet
-				radio.csn(LOW);
-				SPI.transfer(W_TX_PAYLOAD);
-				SPI.transfer(*currESI++);
-				// Send the rest of data
-				for(i = 0; i < bytes_per_symbol; i++ ){
-					SPI.transfer(*currData++);
-				}
-				radio.csn(HIGH);
-				//----------------- Activate radio --------------
-				radio.ce(HIGH);
-			}else // We sent all systemic symbols, so now listen for ACK and send repair symbols
+				tx_payload();
+			}else if(currSlot >= num_timeslots)
 			{
-				radio.ce(LOW);
-				radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
-				radio.setChannel(currChannel);
-
+				isActive = false;
+			}else // We already sent all systemic symbols, so now listen for ACK and send repair symbols
+			{
 				if( (currSlot & 0x01) == 0)	// That is a listening slot
 				{
 					// Set Rx mode
 					radio.write_register(CONFIG, radio.read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX) );
 					radio.flush_rx();
-					radio.flush_tx();
 					// Activate radio
 					radio.ce(HIGH);
 				}else	//Tx slot, but we have to check for the ACK received
@@ -69,19 +74,7 @@ msg_t tx_task(void *arg) {
 						isActive = false;
 					}else
 					{
-						radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
-						//------------------------ Send the Payload ------------
-						// Send ISI as the first byte of the packet
-						radio.csn(LOW);
-						SPI.transfer(W_TX_PAYLOAD);
-						SPI.transfer(*currESI++);
-						// Send the rest of data
-						for(i = 0; i < bytes_per_symbol; i++ ){
-							SPI.transfer(*currData++);
-						}
-						radio.csn(HIGH);
-						// Activate radio
-						radio.ce(HIGH);
+						tx_payload();
 					}
 				}
 			}
@@ -94,43 +87,50 @@ msg_t tx_task(void *arg) {
 //------------------------------------------------------------------------------
 
 void tx_task_setup() {
-  // start handler task
-  chThdCreateStatic(waTx, sizeof(waTx), HIGHPRIO, tx_task, NULL);
+	// start handler task
+	chThdCreateStatic(waTx, sizeof(waTx), HIGHPRIO, tx_task, NULL);
 
-  currChannel = 0;
-  currSlot = 0;
-  isActive = false;
+	currChannel = 0;
+	currSlot = 0;
+	isActive = false;
 
-  {
-	  radio.powerUp();
-	  radio.begin();
-	  radio.stopListening();
-	  radio.setAutoAck(false);
-	  radio.setChannel(currChannel);
-	  radio.setPALevel(RF24_PA_HIGH);
-	  radio.setCRCLength(RF24_CRC_16);
-	  radio.setDataRate(RF24_1MBPS);
-	  radio.setRetries(0,0);
-	  radio.setPayloadSize(packet_size);
-	  radio.write_register(SETUP_AW, 0x01);	// 3 bytes address
-	  radio.write_register(TX_ADDR, tx_addr, 3);
-	  radio.write_register(RX_ADDR_P0, rx_addr, 3);
-	  radio.write_register(RX_PW_P0, packet_size);
-	  radio.write_register(EN_RXADDR, ERX_P0);
-	  radio.write_register(DYNPD,0);
-	  radio.write_register(FEATURE, 0);
-	  radio.powerDown();
-	  radio.powerUp();
-  }
+	{
+		radio.powerUp();
+		radio.begin();
+		radio.stopListening();
+		radio.setAutoAck(false);
+		radio.setChannel(currChannel);
+		radio.setPALevel(RF24_PA_HIGH);
+		radio.setCRCLength(RF24_CRC_16);
+		radio.setDataRate(RF24_1MBPS);
+		radio.setRetries(0,0);
+		radio.setPayloadSize(packet_size);
+		radio.write_register(SETUP_AW, 0x01);	// 3 bytes address
+		radio.write_register(TX_ADDR, tx_addr, 3);
+		radio.write_register(RX_ADDR_P0, rx_addr, 3);
+		radio.write_register(RX_PW_P0, packet_size);
+		radio.write_register(EN_RXADDR, ERX_P0);
+		radio.write_register(DYNPD,0);
+		radio.write_register(FEATURE, 0);
+		radio.powerDown();
+		radio.powerUp();
+	}
 }
 
-void tx_task_start(uint8_t *pData, int *pESI)
+void tx_task_start(int Channel, uint8_t *pData, int *pESI)
 {
- if(isActive)  Serial.println("Tx overrun");
+	if(isActive)  Serial.println("Tx overrun");
 
-  currSlot = 0;
-  currESI = pESI;
-  currData = pData;
-  isActive = true;
+	currChannel = Channel;
+	currSlot = 0;
+	currESI = pESI;
+	currData = pData;
+	isActive = true;
 }
+
+void tx_task_stop()
+{
+	isActive = false;
+}
+
 //------------------------------------------------------------------------------

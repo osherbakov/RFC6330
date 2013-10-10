@@ -21,18 +21,17 @@ extern RF24 radio;
 
 //------------------------------------------------------------------------------------
 // Parameters for TX task
-extern unsigned char *pEnc;
-extern unsigned char *pTx;
 extern void tx_task_setup();
-extern void tx_task_start(uint8_t *pData, int *pESI);
+extern void tx_task_start(int Channel, uint8_t *pData, int *pESI);
+extern void tx_task_stop();
 //------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------
 // Parameters for RX task
-extern unsigned char *pDec;
-extern unsigned char *pRx;
 
 extern void rx_task_setup();
+extern void rx_task_start(int Channel, uint8_t *pData, int *pESI);
+extern void rx_task_stop();
 //------------------------------------------------------------------------------------
 
 
