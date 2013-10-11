@@ -40,7 +40,9 @@ void setup()
 void radio_setup(uint8_t *tx_addr, uint8_t *rx_addr)
 {
 	radio.begin();
+	radio.ce(LOW);
 	radio.powerUp();
+	chThdSleepMilliseconds(5);
 	radio.stopListening();
 	radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 	radio.setAutoAck(false);
@@ -56,7 +58,6 @@ void radio_setup(uint8_t *tx_addr, uint8_t *rx_addr)
 	radio.write_register(EN_RXADDR, ERX_P0);
 	radio.write_register(DYNPD,0);
 	radio.write_register(FEATURE, 0);
-	radio.powerDown();
 }
 
 void mainThread()

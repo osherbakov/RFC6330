@@ -9,15 +9,14 @@ static unsigned int *currESI;
 static uint8_t *currData;
 
 static uint8_t tx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
-static uint8_t rx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
-//static uint8_t rx_addr[] = {0x06, 0x50, 0xED};	// Barker 13 and Barker 11
+static uint8_t ack_addr[] = {0x06, 0x50, 0xED};	// Barker 13 and Barker 11
 
 static void tx_payload()
 {
 	int			i;
 	// Set Tx mode
 	radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
-	radio.flush_tx();
+	radio.setChannel(currChannel);
 	//------------------------ Send the Payload ------------
 	// Send ISI as the first byte of the packet
 	radio.csn(LOW);
@@ -43,7 +42,6 @@ msg_t tx_task(void *arg)
 		if (isActive)
 		{
 			radio.ce(LOW);
-			radio.setChannel(currChannel);
 
 			// First send the systemic symbols on every timeslot
 			// after that listen for the ack and then send repair symbol 
@@ -64,13 +62,14 @@ msg_t tx_task(void *arg)
 					// Set Rx mode
 					radio.write_register(CONFIG, radio.read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX) );
 					radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
+					radio.setChannel(currChannel);
 					radio.flush_rx();
 					// Activate radio
 					radio.ce(HIGH);
 				}else	//Tx slot, but we have to check for the ACK received
 				{
-					bool tx_ok, tx_fail, rx_rdy;
-					radio.whatHappened(tx_ok, tx_fail, rx_rdy);
+					bool rx_rdy;
+					rx_rdy = radio.get_status() & _BV(RX_DR);
 					if(rx_rdy)  // ACK received
 					{
 						Serial.println("Tx:A");
@@ -92,10 +91,8 @@ msg_t tx_task(void *arg)
 
 void tx_task_setup() {
 	chThdCreateStatic(waTx, sizeof(waTx), HIGHPRIO, tx_task, NULL);
-	currChannel = 0;
-	currSlot = 0;
 	isActive = false;
-	radio_setup(tx_addr, rx_addr);
+	radio_setup(tx_addr, ack_addr);
 }
 
 void tx_task_start(int Channel, uint8_t *pData, unsigned int *pESI)
@@ -104,8 +101,8 @@ void tx_task_start(int Channel, uint8_t *pData, unsigned int *pESI)
 
 	currChannel = Channel;
 	currSlot = 0;
-	currESI = pESI;
 	currData = pData;
+	currESI = pESI;
 	isActive = true;
 }
 
