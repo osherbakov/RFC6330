@@ -10,7 +10,7 @@ RF24 radio(9,10);
 
 #include "rfc6330_tasks.h"
 
-#define erasure (0.5)
+#define erasure (0.0)
 #define num_symbols (10)
 #define num_generated_symbols (30)
 #define bytes_per_symbol  (10)
@@ -55,7 +55,7 @@ void radio_setup(uint8_t *tx_addr, uint8_t *rx_addr)
 	radio.write_register(TX_ADDR, tx_addr, 3);
 	radio.write_register(RX_ADDR_P0, rx_addr, 3);
 	radio.write_register(RX_PW_P0, packet_size);
-	radio.write_register(EN_RXADDR, ERX_P0);
+	radio.write_register(EN_RXADDR, _BV(ERX_P0));
 	radio.write_register(DYNPD,0);
 	radio.write_register(FEATURE, 0);
 }
@@ -87,8 +87,11 @@ void mainThread()
 
     rfc6330_encode_block(Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
 //	tx_task_start(22, Encoded, ESIs);
-	rx_task_start(22, Received, ESIs);
-
+	rx_task_start(1, Received, ESIs);
+	
+	chThdYield();
+	chThdSleepMilliseconds(20000);
+/*******************
 	time_start = micros();
 
     // Simulate the erasure channel
@@ -120,7 +123,7 @@ void mainThread()
 
       }
     }
-
+**********************/
   }
 
 }

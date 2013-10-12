@@ -11,7 +11,7 @@ static unsigned int *currESI;
 static uint8_t *currData;
 
 static uint8_t rx_addr[] = {0x1D, 0xA0, 0xCA};	// Barker 11 and Barker 13
-static uint8_t ack_addr[] = {0x06, 0x50, 0xED};	// Barker 13 and Barker 11
+// static uint8_t ack_addr[] = {0x06, 0x50, 0xED};	// Barker 13 and Barker 11
 
 
 msg_t rx_task(void *arg) {
@@ -56,27 +56,25 @@ msg_t rx_task(void *arg) {
 					currSlot = 2 * ISI - num_symbols + 2;
 			}
 
-			if( currSymbol < num_symbols)
+			// Check for the last timeslot 
+			if(currSlot >= num_timeslots)
 			{
-				// Keep collecting packets - set Rx mode/
-				Serial.println("Rx:L");
-				radio.write_register(CONFIG, radio.read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX) );
-				radio.setChannel(currChannel);
-				// Activate radio
-				radio.ce(HIGH);
-			}else if(currSlot >= num_timeslots)
-			{
-				Serial.println("Rx:U");
+				Serial.print(".");
 				currData = Data;
 				currESI = ESI;
 				currSymbol = 0;
-			}else if(rx_rdy)// We already received all the symbols we need - send ACK
+				currSlot = 0;
+			}
+
+			// Check if there is time to send ACK
+			if(rx_rdy && 
+				( (currSymbol > num_symbols) || 
+				  ((currSymbol == num_symbols) && (ISI == (num_symbols-1)))) ) // We already received all the symbols we need - send ACK
 			{
-				Serial.println("Rx:A");
+				Serial.println("Rx:*");
 				radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
 				radio.setChannel(currChannel);
 				radio.flush_tx();
-				radio.flush_rx();
 				//------------------------ Send the Payload ------------
 				radio.csn(LOW);
 				SPI.transfer(W_TX_PAYLOAD);
@@ -87,11 +85,13 @@ msg_t rx_task(void *arg) {
 				radio.csn(HIGH);
 				//----------------- Activate radio --------------
 				radio.ce(HIGH);
-			}else	// This code will execute after ACK was sent
+			}else
 			{
-				Serial.println("Rx:P");
-				isActive = false;
-				// Start processing
+				// Keep collecting packets - set Rx mode/
+				radio.write_register(CONFIG, radio.read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX) );
+				radio.setChannel(currChannel);
+				// Activate radio
+				radio.ce(HIGH);
 			}
 			currSlot++;
 		}
@@ -104,7 +104,7 @@ msg_t rx_task(void *arg) {
 void rx_task_setup() {
 	chThdCreateStatic(waRx, sizeof(waRx), HIGHPRIO, rx_task, NULL);
 	isActive = false;
-	radio_setup(ack_addr, rx_addr);
+	radio_setup(rx_addr, rx_addr);
 }
 
 void rx_task_start(int Channel, uint8_t *pData, unsigned int *pESI)
