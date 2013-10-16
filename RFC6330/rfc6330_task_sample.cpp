@@ -3,8 +3,6 @@
 // initialize semaphore as taken
 BSEMAPHORE_DECL(isrSem, 1);
 
-// ISR entry time
-volatile uint32_t tIsr = 0;
 //------------------------------------------------------------------------------
 // Fake ISR, normally
 // void isrFcn() {
@@ -18,8 +16,6 @@ void isrFcn() {
   /* IRQ handling code, preemptable if the architecture supports it.*/
 
   // Only ISR processing is to save time
-  tIsr = micros();
-
   chSysLockFromIsr();
   /* Invocation of some I-Class system APIs, never preemptable.*/
   chBSemSignalI(&isrSem);  // signal handler task
@@ -39,23 +35,19 @@ msg_t sample_task(void *arg) {
     // wait for event
     chBSemWait(&isrSem);
     
-    // print elapsed time
-    uint32_t t = micros();
-    Serial.print("Handler: ");
-    Serial.println(t - tIsr);
+//    Serial.println(SYST_CVR);
+  SYST_CVR = 2600;
   }
 }
 //------------------------------------------------------------------------------
 void sample_task_setup() {
   // setup and check pins
   pinMode(INPUT_PIN, INPUT);
-  pinMode(OUTPUT_PIN, OUTPUT);
-  digitalWrite(OUTPUT_PIN, HIGH);
   
   // start handler task
   chThdCreateStatic(waSample, sizeof(waSample), HIGHPRIO, sample_task, NULL);
 
   // attach interrupt function
-  attachInterrupt(INPUT_PIN, isrFcn, RISING);
+  attachInterrupt(INPUT_PIN, isrFcn, FALLING);
 }
 //------------------------------------------------------------------------------

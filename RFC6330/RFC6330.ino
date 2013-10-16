@@ -41,6 +41,8 @@ void radio_setup(uint8_t *tx_addr, uint8_t *rx_addr)
 {
 	radio.begin();
 	radio.ce(LOW);
+	radio.write_register(CONFIG, _BV(MASK_TX_DS) | _BV(MASK_MAX_RT) );
+
 	radio.powerUp();
 	chThdSleepMilliseconds(5);
 	radio.stopListening();
@@ -48,7 +50,7 @@ void radio_setup(uint8_t *tx_addr, uint8_t *rx_addr)
 	radio.setAutoAck(false);
 	radio.setPALevel(RF24_PA_HIGH);
 	radio.setCRCLength(RF24_CRC_16);
-	radio.setDataRate(RF24_1MBPS);
+	radio.setDataRate(RF24_250KBPS);
 	radio.setRetries(0,0);
 	radio.setPayloadSize(packet_size);
 	radio.write_register(SETUP_AW, 0x01);	// 3 bytes address
@@ -67,28 +69,23 @@ void mainThread()
   uint32_t time_start, time_end;
 
   Serial.println("*******Starting********");
-//  sample_task_setup();
+   sample_task_setup();
 //  tx_task_setup();
   rx_task_setup();
   
   // Populate the Source with data from 1 to 100
   for(int i = 0; i < source_bytes; i++) Source[i] = i + 1;
 
+    rfc6330_encode_block(Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
+
   while(1)
   {
-	// cause an interrupt - normally done by external event
-//    Serial.println("High");
-//    digitalWrite(OUTPUT_PIN, HIGH);
-//    Serial.println("Low");
-//    digitalWrite(OUTPUT_PIN, LOW);
-//    Serial.println();
 
 	chThdSleepMilliseconds(1000);
-
-    rfc6330_encode_block(Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
 //	tx_task_start(22, Encoded, ESIs);
 	rx_task_start(1, Received, ESIs);
-	
+	while(1) {}
+
 	chThdYield();
 	chThdSleepMilliseconds(20000);
 /*******************

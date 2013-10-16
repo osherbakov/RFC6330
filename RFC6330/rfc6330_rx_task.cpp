@@ -46,7 +46,7 @@ msg_t rx_task(void *arg) {
 					}
 					radio.csn(HIGH);
 					currSymbol++;
-					radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
+					radio.write_register(STATUS, _BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 				} while( !(radio.read_register(FIFO_STATUS) &  _BV(RX_EMPTY)) );
 				
 				// Calculate the timeslot
@@ -64,32 +64,34 @@ msg_t rx_task(void *arg) {
 				currESI = ESI;
 				currSymbol = 0;
 				currSlot = 0;
+
 			}
 
-			// Check if there is time to send ACK
-			if(rx_rdy && 
-				( (currSymbol > num_symbols) || 
-				  ((currSymbol == num_symbols) && (ISI == (num_symbols-1)))) ) // We already received all the symbols we need - send ACK
-			{
-				Serial.println("Rx:*");
-				radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
-				radio.setChannel(currChannel);
-				radio.flush_tx();
-				//------------------------ Send the Payload ------------
-				radio.csn(LOW);
-				SPI.transfer(W_TX_PAYLOAD);
-				// Send received ISIs as a payload of the packet
-				for(i = 0; i < (num_symbols + 1); i++ ){
-					SPI.transfer(ESI[i]);
-				}
-				radio.csn(HIGH);
-				//----------------- Activate radio --------------
-				radio.ce(HIGH);
-			}else
-			{
+                        if(rx_rdy && (currSymbol > num_symbols) && (currSlot < num_timeslots))
+                        {
+	radio.ce(LOW);                          
+      	radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
+      	radio.setChannel(currChannel);
+	radio.write_register(STATUS, _BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
+     	//------------------------ Send the Payload ------------
+      	// Send ISI as the first byte of the packet
+      	radio.csn(LOW);
+      	SPI.transfer(W_TX_PAYLOAD);
+      	// Send the rest of data
+      	for(i = 0; i < (bytes_per_symbol + 1); i++ ){
+      		SPI.transfer(ESI[i]);
+      	}
+      	radio.csn(HIGH);
+      	//----------------- Activate radio --------------
+      	radio.ce(HIGH);
+                          
+                        }
+                        else
+                        {
 				// Keep collecting packets - set Rx mode/
 				radio.write_register(CONFIG, radio.read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX) );
 				radio.setChannel(currChannel);
+				radio.write_register(STATUS, _BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 				// Activate radio
 				radio.ce(HIGH);
 			}
