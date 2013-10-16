@@ -64,30 +64,30 @@ msg_t rx_task(void *arg) {
 				currESI = ESI;
 				currSymbol = 0;
 				currSlot = 0;
-
 			}
 
-                        if(rx_rdy && (currSymbol > num_symbols) && (currSlot < num_timeslots))
-                        {
-	radio.ce(LOW);                          
-      	radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
-      	radio.setChannel(currChannel);
-	radio.write_register(STATUS, _BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
-     	//------------------------ Send the Payload ------------
-      	// Send ISI as the first byte of the packet
-      	radio.csn(LOW);
-      	SPI.transfer(W_TX_PAYLOAD);
-      	// Send the rest of data
-      	for(i = 0; i < (bytes_per_symbol + 1); i++ ){
-      		SPI.transfer(ESI[i]);
-      	}
-      	radio.csn(HIGH);
-      	//----------------- Activate radio --------------
-      	radio.ce(HIGH);
-                          
-                        }
-                        else
-                        {
+			if(rx_rdy &&  (currSlot < num_timeslots) && 
+				( ( currSymbol > num_symbols) || 
+				  ( (currSymbol == num_symbols) && (currSlot == currSymbol) ) ) )
+			{
+				radio.ce(LOW);                          
+				radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
+				radio.setChannel(currChannel);
+				radio.write_register(STATUS, _BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
+				//------------------------ Send the Payload ------------
+				// Send ISI as the first byte of the packet
+				radio.csn(LOW);
+				SPI.transfer(W_TX_PAYLOAD);
+				// Send the rest of data
+				for(i = 0; i < (bytes_per_symbol + 1); i++ ){
+					SPI.transfer(ESI[i]);
+				}
+				radio.csn(HIGH);
+				// Activate radio 
+				radio.ce(HIGH);
+
+			}else
+			{
 				// Keep collecting packets - set Rx mode/
 				radio.write_register(CONFIG, radio.read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX) );
 				radio.setChannel(currChannel);
@@ -97,7 +97,7 @@ msg_t rx_task(void *arg) {
 			}
 			currSlot++;
 		}
-		// Keep the channel running (hopping)
+	// Keep the channel running (hopping)
 //		currChannel++; currChannel &= 0x7F;
 	}
 }
