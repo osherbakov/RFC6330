@@ -1,7 +1,7 @@
 #include "rfc6330_tasks.h"
 
 
-static WORKING_AREA(waTx, 200);
+WORKING_AREA(waTx, 200);
 static bool	isActive = false;
 static int	currSlot = 0;
 static int	currChannel = 0;
@@ -17,7 +17,10 @@ static void tx_payload()
 	// Set Tx mode
 	radio.ce(LOW);
 	radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
+	radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 	radio.setChannel(currChannel);
+        radio.flush_tx();
+        radio.flush_rx();
 	//------------------------ Send the Payload ------------
 	// Send ISI as the first byte of the packet
 	radio.csn(LOW);
@@ -57,7 +60,7 @@ msg_t tx_task(void *arg)
 					// Set Rx mode
                                 	radio.ce(LOW);
 					radio.write_register(CONFIG, radio.read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX) );
-      				        radio.flush_tx();
+					radio.write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 					radio.setChannel(currChannel);
 					// Activate radio
 					radio.ce(HIGH);
@@ -67,8 +70,9 @@ msg_t tx_task(void *arg)
 					rx_rdy = radio.get_status() & _BV(RX_DR);
 					if(rx_rdy)  // ACK received
 					{
-						Serial.println("Tx:AC");
-      				                radio.flush_tx();
+						Serial.println("Tx:ACK");
+      				                radio.flush_rx();
+                                	        radio.ce(LOW);
 						isActive = false;
 					}else
 					{
@@ -92,8 +96,6 @@ void tx_task_setup() {
 
 void tx_task_start(int Channel, uint8_t *pData, unsigned int *pESI)
 {
-	if(isActive)  Serial.println("Tx overrun");
-
 	currChannel = Channel;
 	currSlot = 0;
 	currData = pData;

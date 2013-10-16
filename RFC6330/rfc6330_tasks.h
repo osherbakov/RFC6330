@@ -29,7 +29,6 @@ extern void tx_task_stop();
 
 //------------------------------------------------------------------------------------
 // Parameters for RX task
-
 extern void rx_task_setup();
 extern void rx_task_start(int Channel, uint8_t *pData, unsigned int *pESI);
 extern void rx_task_stop();
@@ -40,7 +39,6 @@ extern void rx_task_stop();
 // Parameters for ISR sample task
 // pins to generate interrupts - these pins must be connected with a wire
 const uint8_t INPUT_PIN = 2;
-const uint8_t OUTPUT_PIN = 3;
 extern void sample_task_setup();
 //------------------------------------------------------------------------------------
 
