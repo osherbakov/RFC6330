@@ -17,8 +17,35 @@
 #define encoded_bytes	(num_symbols * bytes_per_symbol)
 #define packet_size		(bytes_per_symbol + 1)	// Send ISI + data
 
+//------------------------------------------------------------------------------------
+// Common functions and parameters for both Rx and Tx tasks
 extern RF24 radio;
 extern void radio_setup(uint8_t *tx_addr, uint8_t *rx_addr);
+extern void rx_mode();
+
+extern void set_channel(int channel);
+extern int get_channel();
+extern void next_channel();
+
+typedef enum 
+{
+	RXTX_IDLE = 0,
+	TX_IDLE,
+	TX_SYSTEMIC,
+	TX_DONE,
+	TX_LISTEN,
+	TX_REPAIR,
+
+	RX_IDLE,
+	RX_LISTEN,
+	RX_ACK,
+	RX_SKIP,
+	RX_FAIL,
+
+
+}RXTX_STATES;
+
+extern RXTX_STATES rxtx_state;
 
 //------------------------------------------------------------------------------------
 // Parameters for TX task
@@ -36,10 +63,10 @@ extern void rx_task_stop();
 
 
 //------------------------------------------------------------------------------------
-// Parameters for ISR sample task
-// pins to generate interrupts - these pins must be connected with a wire
-const uint8_t INPUT_PIN = 2;
-extern void sample_task_setup();
+// Parameters for ISR task that will will be activated on IRQ
+// pin to generate interrupts - this pin is connected to a IRQ pin of nRF24L01+
+const uint8_t IRQ_INPUT_PIN = 2;
+extern void isr_task_setup();
 //------------------------------------------------------------------------------------
 
 #endif

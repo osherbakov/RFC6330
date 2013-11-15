@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\arduino-1.0.5\hardware\teensy\cores\teensy3;C:\arduino-1.0.5\libraries\Streaming;C:\arduino-1.0.5\libraries\Streaming\utility;C:\arduino-1.0.5\libraries\ChibiOS_ARM;C:\arduino-1.0.5\libraries\ChibiOS_ARM\utility;C:\arduino-1.0.5\libraries\SPI;C:\arduino-1.0.5\libraries\SPI\utility;C:\arduino-1.0.5\libraries\RF24;C:\arduino-1.0.5\libraries\RF24\utility;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include\;"
+				AdditionalIncludeDirectories="C:\arduino-1.0.5\hardware\teensy\cores\teensy3;C:\arduino-1.0.5\libraries\ChibiOS_ARM;C:\arduino-1.0.5\libraries\ChibiOS_ARM\utility;C:\arduino-1.0.5\libraries\SPI;C:\arduino-1.0.5\libraries\SPI\utility;C:\arduino-1.0.5\libraries\RF24;C:\arduino-1.0.5\libraries\RF24\utility;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include\;"
 				PreprocessorDefinitions="__ARM-NONE-EABI_MK20DX128__;;ARDUINO=105;ARDUINO_MAIN;__AVR__;F_CPU=48000000;USB_SERIAL;LAYOUT_US_ENGLISH;__cplusplus;__MK20DX128__"
 				IgnoreStandardIncludePath="true"
 				MinimalRebuild="true"
@@ -165,66 +165,6 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\rfc6330_A.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_decode.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_degree_dist.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_encode.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_gf_gamma.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_gf_gauss.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_gf_mult.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_invert.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_K_prime.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_mat.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_rand.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_rx_task.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_task_sample.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_tuple.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rfc6330_tx_task.cpp"
-				>
-			</File>
 			<Filter
 				Name="CVSD"
 				>
@@ -234,6 +174,82 @@
 				</File>
 				<File
 					RelativePath="..\CVSD\CVSD.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="RFC6330"
+				>
+				<File
+					RelativePath=".\RFC6330.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_A.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_decode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_degree_dist.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_encode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_gf_gamma.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_gf_gauss.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_gf_mult.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_invert.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_K_prime.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_mat.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_rand.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_tuple.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="RxTx"
+				>
+				<File
+					RelativePath=".\rfc6330_isr_task.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_rx_task.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_rxtx.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rfc6330_tx_task.cpp"
 					>
 				</File>
 			</Filter>
@@ -249,6 +265,11 @@
 			</File>
 			<File
 				RelativePath=".\inttypes.h"
+				FileType="0"
+				>
+			</File>
+			<File
+				RelativePath=".\RFC6330.h"
 				FileType="0"
 				>
 			</File>
