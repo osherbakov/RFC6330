@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\arduino-1.0.5\hardware\teensy\cores\teensy3;C:\arduino-1.0.5\libraries\ChibiOS_ARM;C:\arduino-1.0.5\libraries\ChibiOS_ARM\utility;C:\arduino-1.0.5\libraries\SPI;C:\arduino-1.0.5\libraries\SPI\utility;C:\arduino-1.0.5\libraries\RF24;C:\arduino-1.0.5\libraries\RF24\utility;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include\;"
-				PreprocessorDefinitions="__ARM-NONE-EABI_MK20DX128__;;ARDUINO=105;ARDUINO_MAIN;__AVR__;F_CPU=48000000;USB_SERIAL;LAYOUT_US_ENGLISH;__cplusplus;__MK20DX128__"
+				AdditionalIncludeDirectories="C:\arduino-1.0.5\hardware\teensy\cores\teensy3;C:\arduino-1.0.5\libraries\ChibiOS_ARM;C:\arduino-1.0.5\libraries\ChibiOS_ARM\utility;C:\arduino-1.0.5\libraries\SPI;C:\arduino-1.0.5\libraries\SPI\utility;C:\arduino-1.0.5\libraries\RF24;C:\arduino-1.0.5\libraries\RF24\utility;C:\arduino-1.0.5\libraries;C:\arduino-1.0.5\hardware\teensy\libraries;C:\Program Files\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers;C:\Projects\libraries;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\arm-none-eabi\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include;C:\arduino-1.0.5\hardware\tools\arm-none-eabi\lib\gcc\arm-none-eabi\4.7.2\include\;"
+				PreprocessorDefinitions="ARDUINO=105;ARDUINO_MAIN;__AVR__;__avr__;F_CPU=48000000;USB_SERIAL;LAYOUT_US_ENGLISH;__cplusplus;__MK20DX128__;TEENSYDUINO=117"
 				IgnoreStandardIncludePath="true"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

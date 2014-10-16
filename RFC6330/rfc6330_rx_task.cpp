@@ -36,6 +36,7 @@ static int rx_payload()
 
 static void tx_ack()
 {
+	int i;
 	radio.ce(LOW);
 	radio.write_register(CONFIG, ( radio.read_register(CONFIG) | _BV(PWR_UP) ) & ~_BV(PRIM_RX) );
 	radio.setChannel(get_channel());
@@ -90,7 +91,6 @@ msg_t rx_task(void *arg) {
 			break;
 
 		case RX_ACK:
-			if()
 			rxtx_state = RX_SKIP;	// Skip the rest of the slots
 			Serial.println("Rx:A");
 			break;
@@ -98,6 +98,7 @@ msg_t rx_task(void *arg) {
 
 		if (isActive)
 		{
+			int	rx_rdy;
 			rx_rdy = radio.get_status() & _BV(RX_DR);
 			if(rx_rdy)
 			{
@@ -119,7 +120,7 @@ msg_t rx_task(void *arg) {
 				// Keep collecting packets - set Rx mode/
 				Serial.println("Rx:L");
 				radio.write_register(CONFIG, radio.read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX) );
-				radio.setChannel(currChannel);
+				radio.setChannel(get_channel());
 				// Activate radio
 				radio.ce(HIGH);
 			}else if(currSlot >= num_timeslots)

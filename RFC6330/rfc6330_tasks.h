@@ -59,6 +59,7 @@ extern void tx_task_stop();
 extern void rx_task_setup();
 extern void rx_task_start(int Channel, uint8_t *pData, unsigned int *pESI);
 extern void rx_task_stop();
+extern int isActive;
 //------------------------------------------------------------------------------------
 
 
