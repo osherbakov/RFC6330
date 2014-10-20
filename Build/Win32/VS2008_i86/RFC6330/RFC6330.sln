@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RFC6330", "RFC6330.vcproj", "{B34FCE57-D59B-4F76-8C13-30AF8BDF297C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "erasure_test", "..\erasure_test\erasure_test.vcproj", "{B85C92E3-6744-49DA-925B-6764D10FD815}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B34FCE57-D59B-4F76-8C13-30AF8BDF297C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B34FCE57-D59B-4F76-8C13-30AF8BDF297C}.Debug|Win32.Build.0 = Debug|Win32
+		{B34FCE57-D59B-4F76-8C13-30AF8BDF297C}.Release|Win32.ActiveCfg = Release|Win32
+		{B34FCE57-D59B-4F76-8C13-30AF8BDF297C}.Release|Win32.Build.0 = Release|Win32
+		{B85C92E3-6744-49DA-925B-6764D10FD815}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B85C92E3-6744-49DA-925B-6764D10FD815}.Debug|Win32.Build.0 = Debug|Win32
+		{B85C92E3-6744-49DA-925B-6764D10FD815}.Release|Win32.ActiveCfg = Release|Win32
+		{B85C92E3-6744-49DA-925B-6764D10FD815}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
