@@ -1,14 +1,20 @@
 #include "func.h"
 
-unsigned char Gamma[289];
-unsigned char Tmp1[170];
-unsigned char Tmp2[170];
+//unsigned char Gamma[289];
+//unsigned char Tmp1[170];
+//unsigned char Tmp2[170];
+
+unsigned char *pTmp1, *pTmp2, *pGamma;
 
 void create_A(unsigned char *Target, params_t *Params, unsigned int *ISIs, unsigned int NumSymbols)
 {
 	unsigned int Rows, Cols;
 	unsigned int S, H, B, P, W, L, U, K_prime, P1;
 	unsigned int GammaSize;
+	unsigned int a, b;
+	unsigned int ii, jj, i;
+	unsigned int LastColumn;
+	tuple_t tuple;
 
 	K_prime = Params->K_prime;
 	S = Params->S;
@@ -22,8 +28,8 @@ void create_A(unsigned char *Target, params_t *Params, unsigned int *ISIs, unsig
 
 	Rows = S + H + NumSymbols;
 	Cols = L;
-        GammaSize = K_prime + S;
-        
+    GammaSize = K_prime + S;
+	LastColumn = GammaSize - 1;        
         
 	mat_zero(Target, Cols, Rows, Cols);
 	/******************
@@ -39,8 +45,8 @@ for ii = 0:(B-1)
     A(b+1,ii+1) = bitxor(A(b+1,ii+1),1);
 end
 	*******************/
-	unsigned int a, b;
-	for (unsigned int ii = 0; ii < B; ii++)
+
+	for (ii = 0; ii < B; ii++)
 	{
 		a = 1 + ii/S;
 		b = ii % S;
@@ -60,7 +66,7 @@ for ii = 0:(S-1)
 	%     A(mod(ii,S)+1,W+b+1) = bitxor(A(mod(ii,S)+1,W+b+1),1);
 end
 	**********************/	
-	for(unsigned int ii = 0; ii < S; ii++)
+	for(ii = 0; ii < S; ii++)
 	{
 		a = ii % P;
 		b = (ii+1) % P;
@@ -89,7 +95,7 @@ for jj = 1:(K_prime + S - 1)
     %A(S+ii+1,jj) = 1;
 end
 	**************************/
-	for(unsigned int jj = 1; jj < (K_prime + S);jj++)
+	for(jj = 1; jj < (K_prime + S);jj++)
 	{
 		int ii = rfc6330_rand(jj, 6, H);
 		Target[(S + ii)*Cols + jj - 1] ^= 1;
@@ -101,10 +107,10 @@ end
 A((S + 1):(S + H),K_prime + S) = rfc6330_gfpower(0:(H-1)); 
 %Formation of the last coloumn of matrix MT
 ******************************/
-	unsigned int Column = (K_prime + S) - 1;
-	for(unsigned int i = 0; i < H; i++)
+
+	for(i = 0; i < H; i++)
 	{
-		Target[(S + i) * Cols + Column] = gf_power(i);
+		Target[(S + i) * Cols + LastColumn] = gf_power(i);
 	}
 
 /*****************************
@@ -115,12 +121,14 @@ A((S + 1):(S + H),1:(K_prime + S)) = ...
     rfc6330_gfMatrixMult( A((S + 1):(S + H),1:(K_prime + S)), ...
     rfc6330_gamma( K_prime, S ) );
 ******************************/	
+	pGamma = (unsigned char *) osAlloc(GammaSize * GammaSize);
+	pTmp1 = (unsigned char *) osAlloc(GammaSize);
+	pTmp2 = (unsigned char *) osAlloc(GammaSize);
+	gf_gamma(pGamma, GammaSize);
+	mat_copy(pTmp1, GammaSize, &Target[S * Cols + 0], Cols, H, GammaSize);
 
-	gf_gamma(Gamma, GammaSize);
-	mat_copy(Tmp1, GammaSize, &Target[S * Cols + 0], Cols, H, GammaSize);
-
-	gf_mat_mult(Tmp2, Tmp1, H, GammaSize, Gamma, GammaSize, GammaSize);
-	mat_copy(&Target[S * Cols + 0], Cols, Tmp2, GammaSize, H, GammaSize);
+	gf_mat_mult(pTmp2, pTmp1, H, GammaSize, pGamma, GammaSize, GammaSize);
+	mat_copy(&Target[S * Cols + 0], Cols, pTmp2, GammaSize, H, GammaSize);
 
 	/******************************
 	% insert HxH identity matrix
@@ -153,13 +161,12 @@ for ii = 1:length(ISIs)
 end
 	********************************/
 
-	tuple_t tuple;
-	for(unsigned int ii = 0; ii < NumSymbols; ii++)
+	for(ii = 0; ii < NumSymbols; ii++)
 	{
 		calc_tuple(&tuple, Params, ISIs[ii]);
 
 		Target[ (ii + S + H) * Cols + tuple.b] = 1;
-		for(unsigned int jj = 1; jj < tuple.d; jj++)
+		for(jj = 1; jj < tuple.d; jj++)
 		{
 			tuple.b = (tuple.b + tuple.a) % W;
 			Target[ (ii + S + H) * Cols + tuple.b] ^= 1;
@@ -171,7 +178,7 @@ end
 		
 		Target[ (ii + S + H) * Cols + tuple.b1 + W] ^= 1;
 
-		for(unsigned int jj = 1; jj < tuple.d1; jj++)
+		for(jj = 1; jj < tuple.d1; jj++)
 		{
 			tuple.b1 = (tuple.b1 + tuple.a1) % P1;
 			while (tuple.b1 >= P)
@@ -181,4 +188,7 @@ end
 			Target[ (ii + S + H) * Cols + tuple.b1 + W] ^= 1;
 		}
 	}
+	osFree(pTmp2);
+	osFree(pTmp1);
+	osFree(pGamma);
 }

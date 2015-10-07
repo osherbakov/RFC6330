@@ -223,8 +223,8 @@ returnSymbols = Symbol(1:COLS);
 		for(pivot_row = row; (*pData == 0) && (pivot_row < ROWS); pivot_row++, pData += COLS){}
 		if((pivot_row < ROWS) && (pivot_row != row))				// If there is a pivot row - bring it to the top...
 		{
-			pPivot = A + pivot_row * COLS + col;  // A[pivot_row]
-			pData = A + row * COLS + col;		// A[row]
+			pPivot = A + pivot_row * COLS + col;  // A[pivot_row, col]
+			pData = A + row * COLS + col;		// A[row, col]
 			for (int i = col; i < COLS; i++, pData++, pPivot++)
 			{
 				swap(*pData, *pPivot);

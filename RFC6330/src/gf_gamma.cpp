@@ -27,11 +27,12 @@ function Gamma = rfc6330_gamma( K_prime, S )
 void gf_gamma(unsigned char *Target, unsigned Size)
 {
 	unsigned char *Gamma;
+	unsigned int ii, jj;
 	mat_zero(Target, Size, Size, Size);
-	for (unsigned int jj = 0; jj < Size; jj++)
+	for (jj = 0; jj < Size; jj++)
 	{
 		Gamma = Target +  jj * Size + jj;
-		for (unsigned int ii = jj; ii < Size; ii++)
+		for (ii = jj; ii < Size; ii++)
 		{
 			*Gamma = gf_power(ii - jj);
 			Gamma += Size;

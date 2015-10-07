@@ -40,8 +40,6 @@ void calc_parameters(unsigned int K, params_t *params);
 
 unsigned int degree(uint32_t v, unsigned int W);
 
-
-
 void calc_tuple( tuple_t *tuple, params_t *param, unsigned int ISI);
 
 void create_A(unsigned char *Target, params_t *Params, unsigned int *ISIs, unsigned int NumSymbols);
@@ -110,5 +108,8 @@ void vec_swap(unsigned char *v1, unsigned char *v2, unsigned int Size);
 //--------------------------
 
 uint32_t rfc6330_rand(uint32_t x, unsigned int ii, uint32_t m);
+
+void *osAlloc(unsigned int size);
+void osFree(void *pMem);
 
 #endif

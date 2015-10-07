@@ -3,21 +3,24 @@
 #include <string.h>
 #include <stdio.h>
 
-#define num_symbols (10)
-#define num_generated_symbols (30)
-#define bytes_per_symbol  (1)
+#define NUM_SYMBOLS			(10)
+#define GENERATE_SYMBOLS	(20)
+#define BYTES_PER_SYMBOL	(1)
 
-#define erasure  (0.8f)
+#define ERASURE_RATE		(0.5f)
 
-#define source_bytes (num_symbols * bytes_per_symbol)
+#define SOURCE_BYTES		(NUM_SYMBOLS * BYTES_PER_SYMBOL)
 
 
 
-unsigned char Source[source_bytes]; // = {73, 110, 32, 116, 104, 101, 32, 98, 101, 103, 105 , 110, 110, /* 105, 110, 103*/};
-unsigned char Encoded[num_generated_symbols * bytes_per_symbol];
-unsigned char Received[num_generated_symbols * bytes_per_symbol];
-unsigned char Dest[source_bytes];
-unsigned int ESIs[num_generated_symbols];
+unsigned char Source[SOURCE_BYTES]; // = {73, 110, 32, 116, 104, 101, 32, 98, 101, 103, 105 , 110, 110, /* 105, 110, 103*/};
+unsigned char Dest[SOURCE_BYTES];
+
+unsigned char Encoded[GENERATE_SYMBOLS * BYTES_PER_SYMBOL];
+unsigned char Received[GENERATE_SYMBOLS * BYTES_PER_SYMBOL];
+unsigned int ESIs[GENERATE_SYMBOLS];
+unsigned int ERIs[GENERATE_SYMBOLS];
+
 
 
 
@@ -25,15 +28,22 @@ unsigned int ESIs[num_generated_symbols];
 /*----------- */
 unsigned int heap[2500];
 void *p_heap;
-void *halloc(unsigned int mem_size)
+void *p_heap_start;
+void *p_heap_end;
+
+void *osAlloc(unsigned int req_mem_size)
 {
   void *ret = p_heap;
-  p_heap = (void *) ( (unsigned int) p_heap + mem_size);
+  void *new_heap_end = (void *)((unsigned int)p_heap + req_mem_size);
+  if(p_heap_end < new_heap_end) 
+	  return 0;
+  p_heap = new_heap_end;
   return ret;
 }
 
-void hfree(void *p_mem)
+void osFree(void *p_mem)
 {
+  if((p_mem > p_heap) || (p_mem < p_heap_start)) return;
   p_heap = p_mem;
 }
 /*************/
@@ -42,49 +52,56 @@ void main()
 {
   int  ret;
 
-  p_heap = &heap[0];
+  int	numBlocks;
+  int	numReceived;
+  int	numDecoded;
+  int	numRequredExtra;
 
-
+  p_heap_start = &heap[0];
+  p_heap_end = &heap[0] + (sizeof(heap) * sizeof(unsigned int));
+  p_heap = p_heap_start;
 
   printf("*******Starting********\n");
   
 
-  // Populate the Source with data from 1 to 100
-   for(int i = 0; i < source_bytes; i++) Source[i] = i + 1;
+  // Populate the Source with data from 1 to SOURCE_BYTES
+  for(int i = 0; i < SOURCE_BYTES; i++) Source[i] = i + 1;
 
+  numBlocks = numDecoded = numRequredExtra = numReceived = 0;
   while(1)
   {
-
-    encode_block(Encoded, ESIs, num_generated_symbols, Source, bytes_per_symbol, source_bytes);
+	numBlocks++;
+    encode_block(Encoded, ESIs, GENERATE_SYMBOLS, Source, BYTES_PER_SYMBOL, SOURCE_BYTES);
 
     // Simulate the erasure channel
     int rcvd_idx = 0;
-    for(int i = 0; i < num_generated_symbols; i++)
+    for(int i = 0; i < GENERATE_SYMBOLS; i++)
     {
-      if( (rand() % 100) >= (int)(erasure * 100))
+      if( (rand() % 100) >= (int)(ERASURE_RATE * 100))
       {
-        memcpy(Received + rcvd_idx * bytes_per_symbol, Encoded + i * bytes_per_symbol, bytes_per_symbol); 
-        ESIs[rcvd_idx++] = ESIs[i];
-       
-        if(rcvd_idx >= num_symbols)
+		// We received the symbol OK thru the channel - put it into buffer and store the index
+        memcpy(Received + rcvd_idx * BYTES_PER_SYMBOL, Encoded + i * BYTES_PER_SYMBOL, BYTES_PER_SYMBOL); 
+        ERIs[rcvd_idx] = ESIs[i];
+        rcvd_idx++;
+        if(rcvd_idx >= NUM_SYMBOLS)
         {
-          ret = decode_block(Dest, source_bytes, Received, bytes_per_symbol, ESIs, rcvd_idx);
-          if( ret == 0)
+		  if(rcvd_idx == NUM_SYMBOLS) numReceived++;
+          ret = decode_block(Dest, SOURCE_BYTES, Received, BYTES_PER_SYMBOL, ERIs, rcvd_idx);
+          if( ret != 0)
           {
-            // decoded
-			  printf("Received %d symbols:", rcvd_idx);
-            for(int k = 0; k < rcvd_idx; k++)    printf("%d ", ESIs[k]);  //
-//            Serial << "Time Elapsed = " << (time_end - time_start) << " us" << endl;
-            printf("Compare Src and DST = 0x%04x\n", memcmp(Source, Dest, source_bytes));
-            break;
-          }else
-          {
-			  printf( "Extra symbol needed: Symb[%d] = ESI[%d]\n", rcvd_idx, i);
-          }
+			  numRequredExtra++;
+			  continue;
+		  }
+		  if(memcmp(Source, Dest, SOURCE_BYTES) == 0){ 
+			  numDecoded++;
+			  break;
+		  }
         }
-
       }
     }
+	printf("Sent: %d\tRcvd: %d(%2.f%%)\tCorrect: %d(%2.f%%)\tExtra: %d\r", 
+		numBlocks, numReceived, numReceived*100.f/numBlocks,
+		numDecoded, numDecoded*100.f/numReceived, numRequredExtra);
 
   }
 

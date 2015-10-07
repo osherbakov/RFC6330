@@ -32,7 +32,7 @@ void calc_tuple(tuple_t *tuple, params_t *param, unsigned int ISI)
 	A |= 0x00000001;
 	B = 10267 * (J+1);
 	y =  B + ISI * A;
-	v = rfc6330_rand(y, 0, ((uint32_t)0x1) << 20);
+	v = rfc6330_rand(y, 0, ((uint32_t)0x1L) << 20);
 	
 	tuple->d = degree(v, W);
 	tuple->a = 1 + rfc6330_rand(y, 1, W-1);
