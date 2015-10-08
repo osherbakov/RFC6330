@@ -1,5 +1,5 @@
-#ifndef __FUNC_H__
-#define __FUNC_H__
+#ifndef __RFC6330_FUNC_H__
+#define __RFC6330_FUNC_H__
 #include "stdlib.h"
 #include "string.h"
 #include <stdint.h>
@@ -46,24 +46,9 @@ void calc_tuple( tuple_t *tuple, params_t *param, unsigned int ISI);
 
 void create_A(unsigned char *Target, params_t *Params, unsigned int *ISIs, unsigned int NumSymbols);
 
-int gf_gauss(unsigned char *Result, 
-					  params_t * Params, 
-					  unsigned char *A, 
-					  unsigned char *Symbols, unsigned int BytesPerSymbol,
-					  unsigned int NumSymbols);
-
-void encode(unsigned  char *Result, params_t *Params, 
+void encode_run(unsigned  char *Result, params_t *Params, 
 					unsigned char *IntermediateSymbols, unsigned int BytesPerSymbol, 
 					unsigned int *ESIs, unsigned int Size);
-
-void encode_block(unsigned char *Result, unsigned int *ESIs, 
-						  unsigned int NumSymbols,
-						  unsigned char *Source,  unsigned int BytesPerSymbol,
-						  unsigned int NumSrcBytes);
-
-int decode_block(unsigned char *Result, unsigned int NumResultBytes,  
-						  unsigned char *Source, unsigned int BytesPerSymbol, 
-						  unsigned int *ESIs, unsigned int NumSymbols);
 
 //  Operations on the GF(256) Field 
 unsigned char gf_power(unsigned int ii);
@@ -86,6 +71,12 @@ void gf_mat_mult(unsigned char *Result,
 						 unsigned char *G, unsigned int G_row, unsigned int G_col 
 						  );
 void gf_gamma(unsigned char *Target, unsigned Size );
+
+int gf_gauss(unsigned char *Result, 
+					  params_t * Params, 
+					  unsigned char *A, 
+					  unsigned char *Symbols, unsigned int BytesPerSymbol,
+					  unsigned int NumSymbols);
 //--------------------------
 
 // Simple matrix operations - Identity and Zero

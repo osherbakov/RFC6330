@@ -50,9 +50,42 @@ end
 *********************************/
 #include "RFC6330func.h"
 
-void init_encode( unsigned int NumOutSymbols, unsigned int BytesPerSymbol, unsigned int NumSrcBytes)
+void encode_run(unsigned  char *Result, params_t *Params, 
+					unsigned char *IntermediateSymbols, unsigned int BytesPerSymbol, 
+					unsigned int *ESIs, unsigned int NumSymbols)
 {
+	tuple_t tuple;
+	unsigned char *pData;
+	unsigned int ii, jj;
+	for (ii = 0; ii < NumSymbols; ii++)
+	{
+		pData = &Result[ii * BytesPerSymbol];
+		calc_tuple(&tuple, Params, ESIs[ii]);
+		vec_copy(pData, &IntermediateSymbols[tuple.b * BytesPerSymbol], BytesPerSymbol);
+		for(jj = 1; jj < tuple.d; jj++)
+		{
+			tuple.b = (tuple.b + tuple.a) % Params->W;
+			vec_xor(pData, pData, &IntermediateSymbols[tuple.b * BytesPerSymbol], BytesPerSymbol);
+		}
 
+		// Look for the appropriate index
+		while (tuple.b1 >= Params->P)
+		{
+			tuple.b1 = (tuple.b1 + tuple.a1) % Params->P1;
+		}		
+		vec_xor(pData, pData, &IntermediateSymbols[(Params->W + tuple.b1) * BytesPerSymbol], BytesPerSymbol);
+
+		for(jj = 1; jj < tuple.d1; jj++)
+		{
+			tuple.b1 = (tuple.b1 + tuple.a1) % Params->P1;
+			// Look for the appropriate index
+			while (tuple.b1 >= Params->P)
+			{
+				tuple.b1 = (tuple.b1 + tuple.a1) % Params->P1;
+			}
+			vec_xor(pData, pData, &IntermediateSymbols[(Params->W + tuple.b1) * BytesPerSymbol], BytesPerSymbol);
+		}
+	}
 }
 
 void encode_block(unsigned char *Result, unsigned int *ESIs,  
@@ -96,47 +129,10 @@ void encode_block(unsigned char *Result, unsigned int *ESIs,
 	// Generate all the required symbols (systemic + repair).
 	// Skip generation of the zero-padding symbols at the end
 	for (i = 0; i < NumOutSymbols; i++) ESIs[i] = (i < NumSrcSymbols) ? i : (K_prime - NumSrcSymbols) + i;
-	encode(Result, &Params, pSymbols, BytesPerSymbol, ESIs, NumOutSymbols);
+	encode_run(Result, &Params, pSymbols, BytesPerSymbol, ESIs, NumOutSymbols);
 
 	osFree(pA);
 	osFree(pISI);
 	osFree(pSymbols);
 }
 
-void encode(unsigned  char *Result, params_t *Params, 
-					unsigned char *IntermediateSymbols, unsigned int BytesPerSymbol, 
-					unsigned int *ESIs, unsigned int NumSymbols)
-{
-	tuple_t tuple;
-	unsigned char *pData;
-	unsigned int ii, jj;
-	for (ii = 0; ii < NumSymbols; ii++)
-	{
-		pData = &Result[ii * BytesPerSymbol];
-		calc_tuple(&tuple, Params, ESIs[ii]);
-		vec_copy(pData, &IntermediateSymbols[tuple.b * BytesPerSymbol], BytesPerSymbol);
-		for(jj = 1; jj < tuple.d; jj++)
-		{
-			tuple.b = (tuple.b + tuple.a) % Params->W;
-			vec_xor(pData, pData, &IntermediateSymbols[tuple.b * BytesPerSymbol], BytesPerSymbol);
-		}
-
-		// Look for the appropriate index
-		while (tuple.b1 >= Params->P)
-		{
-			tuple.b1 = (tuple.b1 + tuple.a1) % Params->P1;
-		}		
-		vec_xor(pData, pData, &IntermediateSymbols[(Params->W + tuple.b1) * BytesPerSymbol], BytesPerSymbol);
-
-		for(jj = 1; jj < tuple.d1; jj++)
-		{
-			tuple.b1 = (tuple.b1 + tuple.a1) % Params->P1;
-			// Look for the appropriate index
-			while (tuple.b1 >= Params->P)
-			{
-				tuple.b1 = (tuple.b1 + tuple.a1) % Params->P1;
-			}
-			vec_xor(pData, pData, &IntermediateSymbols[(Params->W + tuple.b1) * BytesPerSymbol], BytesPerSymbol);
-		}
-	}
-}

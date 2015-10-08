@@ -50,7 +50,7 @@ int decode_block(unsigned char *Result, unsigned int NumResultBytes,
 	if( gf_gauss(0, &Params, pA, pSymbols, BytesPerSymbol, ROWS) == 0)
 	{
 		// Generate the original symbols
-		encode(Result, &Params, pSymbols, BytesPerSymbol, pISI, NumResultSymbols);
+		encode_run(Result, &Params, pSymbols, BytesPerSymbol, pISI, NumResultSymbols);
         ret = 0;
 	}
 

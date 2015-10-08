@@ -1,4 +1,5 @@
 #include "RFC6330func.h"
+#include "RFC6330.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
