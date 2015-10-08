@@ -48,30 +48,29 @@ for ii=1:length(ISIs)
     end
 end
 *********************************/
-#include "func.h"
+#include "RFC6330func.h"
 
-//static unsigned int ISIs[10];
-//static unsigned char A[756];
-//static unsigned char Symbols[270];
+void init_encode( unsigned int NumOutSymbols, unsigned int BytesPerSymbol, unsigned int NumSrcBytes)
+{
 
-static unsigned int *pISI;
-static unsigned char *pA, *pSymbols;
-
+}
 
 void encode_block(unsigned char *Result, unsigned int *ESIs,  
-						  unsigned int NumSymbols,
+						  unsigned int NumOutSymbols,
 						  unsigned char *Source, unsigned int BytesPerSymbol, 
 						  unsigned int NumSrcBytes)
 {
 	params_t Params;
-	unsigned int K, L, S, H, K_prime;
+	unsigned int NumSrcSymbols, L, S, H, K_prime;
 	unsigned int ROWS;
 	unsigned int i;
+	unsigned int *pISI;
+	unsigned char *pA, *pSymbols;
+	
+	NumSrcSymbols = (NumSrcBytes + (BytesPerSymbol >> 1))/BytesPerSymbol;
+	if (NumSrcSymbols == 0) return;
 
-	K = (NumSrcBytes + (BytesPerSymbol >> 1))/BytesPerSymbol;
-	if (K == 0) return;
-
-	calc_parameters(K, &Params);
+	calc_parameters(NumSrcSymbols, &Params);
 	K_prime = Params.K_prime;
 	S = Params.S;
 	H = Params.H;
@@ -96,8 +95,8 @@ void encode_block(unsigned char *Result, unsigned int *ESIs,
 
 	// Generate all the required symbols (systemic + repair).
 	// Skip generation of the zero-padding symbols at the end
-	for (i = 0; i < NumSymbols; i++) ESIs[i] = i < K ? i : (K_prime - K) + i;
-	encode(Result, &Params, pSymbols, BytesPerSymbol, ESIs, NumSymbols);
+	for (i = 0; i < NumOutSymbols; i++) ESIs[i] = (i < NumSrcSymbols) ? i : (K_prime - NumSrcSymbols) + i;
+	encode(Result, &Params, pSymbols, BytesPerSymbol, ESIs, NumOutSymbols);
 
 	osFree(pA);
 	osFree(pISI);

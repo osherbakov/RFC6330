@@ -1,4 +1,4 @@
-#include "func.h"
+#include "RFC6330func.h"
 
 void mat_eye(unsigned char *Target, unsigned int nStride, unsigned int Size)
 {

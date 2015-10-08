@@ -187,7 +187,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\..\..\RFC6330\src\func.h"
+				RelativePath="..\..\..\..\RFC6330\src\RFC6330func.h"
 				>
 			</File>
 		</Filter>

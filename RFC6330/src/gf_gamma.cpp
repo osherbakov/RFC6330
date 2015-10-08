@@ -22,7 +22,7 @@ function Gamma = rfc6330_gamma( K_prime, S )
 		end
 	end
 *****************/
-#include "func.h"
+#include "RFC6330func.h"
 
 void gf_gamma(unsigned char *Target, unsigned Size)
 {

@@ -341,7 +341,7 @@ end
 IntermediateSymbols(c(1:ii)) = Symbol(d(1:ii));
 ***************************************/
 
-#include "func.h"
+#include "RFC6330func.h"
 #include "stdlib.h"
 
 

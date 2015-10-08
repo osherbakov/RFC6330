@@ -1,4 +1,4 @@
-#include "func.h"
+#include "RFC6330func.h"
 
 #define swap(a,b) {unsigned char tmp; tmp = (a); (a) = (b); (b) = (tmp);}while(0)
 
@@ -260,7 +260,7 @@ returnSymbols = Symbol(1:COLS);
 				{
 					*pData ^= gf_mult(*pPivot, coeff);
 				}
-				gf_vec_scale_xor(&Symbols[irow * BytesPerSymbol], &Symbols[row * BytesPerSymbol], coeff, BytesPerSymbol);
+				gf_vec_scale_sub(&Symbols[irow * BytesPerSymbol], &Symbols[row * BytesPerSymbol], coeff, BytesPerSymbol);
 			}
 		}
 	}
@@ -275,7 +275,7 @@ returnSymbols = Symbol(1:COLS);
 			coeff = *pData;
 			if(coeff)
 			{
-				gf_vec_scale_xor(&Symbols[row * BytesPerSymbol], &Symbols[col * BytesPerSymbol], coeff, BytesPerSymbol);
+				gf_vec_scale_add(&Symbols[row * BytesPerSymbol], &Symbols[col * BytesPerSymbol], coeff, BytesPerSymbol);
 			}
 		}
 	}

@@ -10,10 +10,10 @@ function K_prime = rfc6330_K_prime( K )
 %
 *******************/
 
-#include "func.h"
+#include "RFC6330func.h"
 
 
-uint16_t const Coding_table[] = 
+const uint16_t Coding_table[] = 
 {
 // K' J(K') S(K') H(K') W(K') P1(K')
 10,254,7,10,17,11,
@@ -542,6 +542,7 @@ void calc_parameters(unsigned int K, params_t *params)
 	params->P = params->L - params->W;
 	params->U = params->P - params->H;
 	params->B = params->W - params->S;
-
+	params->tupleA = (53591 + (997*params->J)) | 0x00000001;
+	params->tupleB = 10267 * (params->J + 1);
 }
 

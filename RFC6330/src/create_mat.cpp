@@ -1,10 +1,5 @@
-#include "func.h"
+#include "RFC6330func.h"
 
-//unsigned char Gamma[289];
-//unsigned char Tmp1[170];
-//unsigned char Tmp2[170];
-
-unsigned char *pTmp1, *pTmp2, *pGamma;
 
 void create_A(unsigned char *Target, params_t *Params, unsigned int *ISIs, unsigned int NumSymbols)
 {
@@ -14,6 +9,7 @@ void create_A(unsigned char *Target, params_t *Params, unsigned int *ISIs, unsig
 	unsigned int a, b;
 	unsigned int ii, jj, i;
 	unsigned int LastColumn;
+	unsigned char *pTmp1, *pTmp2, *pGamma;
 	tuple_t tuple;
 
 	K_prime = Params->K_prime;
