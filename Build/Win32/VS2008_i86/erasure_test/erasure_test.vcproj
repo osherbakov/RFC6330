@@ -180,6 +180,10 @@
 				RelativePath="..\..\..\..\Tests\erasure_test\Erasure_test.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\target.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

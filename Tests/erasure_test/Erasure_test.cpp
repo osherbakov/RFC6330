@@ -24,40 +24,6 @@ unsigned int ERIs[GENERATE_SYMBOLS];
 
 
 
-
-
-/*----------- */
-unsigned int heap[2500];
-void *p_heap;
-void *p_heap_start;
-void *p_heap_end;
-void *p_heap_max;
-
-void *osAlloc(unsigned int req_mem_size)
-{
-  void *ret = p_heap;
-  void *p_new_heap = (void *)((unsigned int)p_heap + req_mem_size);
-  if(p_heap_end < p_new_heap) 
-	  return 0;
-  p_heap_max = (p_heap > p_heap_max) ? p_heap : p_heap_max;
-  p_heap = p_new_heap;
-  return ret;
-}
-
-void osFree(void *p_mem)
-{
-  if((p_mem > p_heap) || (p_mem < p_heap_start)) return;
-  p_heap = p_mem;
-}
-
-void osHeapInit()
-{
-  p_heap_start = &heap[0];
-  p_heap_end = &heap[0] + (sizeof(heap) * sizeof(unsigned int));
-  p_heap = p_heap_start;
-  p_heap_max = p_heap;
-}
-
 /*************/
 
 void main()

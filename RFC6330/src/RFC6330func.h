@@ -51,6 +51,10 @@ void encode_run(unsigned  char *Result, params_t *Params,
 					unsigned int *ESIs, unsigned int Size);
 
 //  Operations on the GF(256) Field 
+#define gf_add(a, b)  ((a) ^ (b))
+
+#define gf_sub(a, b)  ((a) ^ (b))
+
 unsigned char gf_power(unsigned int ii);
 
 unsigned char gf_mult(unsigned char u, unsigned char v);
@@ -105,6 +109,8 @@ void vec_swap(unsigned char *v1, unsigned char *v2, unsigned int Size);
 
 uint32_t rfc6330_rand(uint32_t x, unsigned int ii, uint32_t m);
 
+// Target-specific function for memory allocation and de-allocation
+void osHeapInit(void);
 void *osAlloc(unsigned int size);
 void osFree(void *pMem);
 
